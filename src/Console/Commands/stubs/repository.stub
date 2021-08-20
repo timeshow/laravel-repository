@@ -1,0 +1,19 @@
+<?php
+
+namespace DummyNamespace;
+
+use RepositoryNamespace;
+use DummyModelNamespace;
+
+class DummyClass extends RepositoryClass
+{
+    /**
+     * Returns specified model class name.
+     *
+     * @return string
+     */
+    public function model()
+    {
+        return DummyModelClass::class;
+    }
+}

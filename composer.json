@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TimeShow\\Laravel-Repository\\": "src/"
+            "TimeShow\\Repository\\": "src/"
         }
     }
 }
