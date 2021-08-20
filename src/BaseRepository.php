@@ -318,7 +318,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Creates a model and returns it
-     *
+     * 插入
+     * @param  array $data
+     * @return Model|null
+     */
+    public function insert(array $data)
+    {
+        return $this->makeModel(false)->insert($data);
+    }
+
+    /**
+     * Creates a model and returns it
+     * 创建
      * @param  array $data
      * @return Model|null
      */
@@ -328,8 +339,19 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Save a model and returns it
+     * 保存
+     * @param  array $data
+     * @return Model|null
+     */
+    public function save(array $data)
+    {
+        return $this->makeModel(false)->save($data);
+    }
+
+    /**
      * Updates a model by id
-     *
+     * 更新
      * @param  array       $data
      * @param  mixed       $id
      * @param  string|null $attribute
@@ -366,7 +388,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Deletes a model by id
-     *
+     * 删除
      * @param  mixed $id
      * @return bool
      */

@@ -142,16 +142,32 @@ interface BaseRepositoryInterface
     public function make(array $data);
 
     /**
+     * Insert a model and returns it
+     * 插入
+     * @param array $attributes
+     * @return mixed
+     */
+    public function insert(array $data);
+
+    /**
      * Creates a model and returns it
-     *
+     * 创建
      * @param array $data
      * @return Model|null
      */
     public function create(array $data);
 
     /**
+     * Save a model and returns it
+     * 保存
+     * @param array $data
+     * @return Model|null
+     */
+    public function save(array $data);
+
+    /**
      * Updates a model by $id
-     *
+     * 更新
      * @param array  $data
      * @param        $id
      * @param string $attribute
@@ -171,7 +187,7 @@ interface BaseRepositoryInterface
 
     /**
      * Deletes a model by $id
-     *
+     * 删除
      * @param $id
      * @return boolean
      */

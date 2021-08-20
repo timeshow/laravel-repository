@@ -1,15 +1,13 @@
 # Laravel Repository
 
+
 ## Version Compatibility
 
  Laravel      | Package
 :-------------|:--------
- 5.1          | 1.0
- 5.2          | 1.2
- 5.3          | 1.2
- 5.4 to 5.8   | 1.4
- 6.0          | 2.0
- 7.0, 8.0     | 2.1
+ 7.0     | 0.1.0
+ 8.0     | last version
+
 
 ## Install
 Via Composer
@@ -28,4 +26,12 @@ Publish the repostory configuration file.
 
 ``` bash
 php artisan vendor:publish --tag="repository"
+```
+
+
+## Q&A
+question1: Unable to locate publishable resources.
+``` bash
+php artisan cache:clear
+php artisan config:clear
 ```
