@@ -39,7 +39,7 @@ class MakeRepositoryCommand extends GeneratorCommand
     /**
      * @var string
      */
-    protected $models = 'App';
+    protected $models = 'App\\Models';
 
     /**
      * @var string
@@ -76,7 +76,7 @@ class MakeRepositoryCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return RepositoryServiceProvider::$packagePath . '/stubs/repository.stub';
+        return RepositoryServiceProvider::$packagePath . '/Console/Commands/stubs/repository.stub';
     }
 
     /**

@@ -21,7 +21,7 @@ $ composer require timeshow/laravel-repository
 If you want to use the repository generator through the `make:repository` Artisan command, add the `RepositoryServiceProvider` to your `config/app.php`:
 
 ``` php
-TimeShow\Laravel-Repository\RepositoryServiceProvider::class,
+TimeShow\Repository\RepositoryServiceProvider::class,
 ```
 
 Publish the repostory configuration file.

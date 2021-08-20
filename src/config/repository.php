@@ -21,6 +21,10 @@ return [
     |--------------------------------------------------------------------------
     */
     'generator'  => [
+        'namespace' => 'App\\Repositories',
+        'base' => TimeShow\Repository\BaseRepository::class,
+        'suffix' => 'Repository',
+        'models' => 'App\\Models',
         'basePath'      => app()->path(),
         'rootNamespace' => 'App\\',
         'stubsOverridePath' => app()->path(),

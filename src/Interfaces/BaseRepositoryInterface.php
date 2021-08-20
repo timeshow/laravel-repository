@@ -1,6 +1,12 @@
 <?php
 namespace TimeShow\Repository\Interfaces;
 
+use Closure;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
+
 interface BaseRepositoryInterface
 {
     /**
@@ -22,12 +28,35 @@ interface BaseRepositoryInterface
     public function makeModel($storeModel = true);
 
     /**
+     * Give unexecuted query for current criteria
+     *
+     * @return EloquentBuilder
+     */
+    public function query();
+
+    /**
+     * Does a simple count(*) for the model / scope
+     *
+     * @return int
+     */
+    public function count();
+
+    /**
      * Returns first match
      *
      * @param array $columns
      * @return Model|null
      */
     public function first($columns = ['*']);
+
+    /**
+     * Returns first match or throws exception if not found
+     *
+     * @param array $columns
+     * @return Model
+     * @throws ModelNotFoundException
+     */
+    public function firstOrFail($columns = ['*']);
 
     /**
      * @param array $columns
@@ -49,6 +78,104 @@ interface BaseRepositoryInterface
      * @deprecated
      */
     public function lists($value, $key = null);
+
+    /**
+     * @param int    $perPage
+     * @param array  $columns
+     * @param string $pageName
+     * @param null   $page
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function paginate($perPage, $columns = ['*'], $pageName = 'page', $page = null);
+
+    /**
+     * @param  int|string  $id
+     * @param  array       $columns
+     * @param  string|null $attribute
+     * @return Model|null
+     */
+    public function find($id, $columns = ['*'], $attribute = null);
+
+    /**
+     * Returns first match or throws exception if not found
+     *
+     * @param  int|string $id
+     * @param  array      $columns
+     * @return Model
+     * @throws ModelNotFoundException
+     */
+    public function findOrFail($id, $columns = ['*']);
+
+    /**
+     * @param string $attribute
+     * @param mixed  $value
+     * @param array  $columns
+     * @return mixed
+     */
+    public function findBy($attribute, $value, $columns = ['*']);
+
+    /**
+     * @param string $attribute
+     * @param mixed  $value
+     * @param array  $columns
+     * @return mixed
+     */
+    public function findAllBy($attribute, $value, $columns = ['*']);
+
+    /**
+     * Find a collection of models by the given query conditions.
+     *
+     * @param array $where
+     * @param array $columns
+     * @param bool  $or
+     *
+     * @return Collection|null
+     */
+    public function findWhere($where, $columns = ['*'], $or = false);
+
+    /**
+     * Makes a new model without persisting it
+     *
+     * @param  array $data
+     * @return Model
+     */
+    public function make(array $data);
+
+    /**
+     * Creates a model and returns it
+     *
+     * @param array $data
+     * @return Model|null
+     */
+    public function create(array $data);
+
+    /**
+     * Updates a model by $id
+     *
+     * @param array  $data
+     * @param        $id
+     * @param string $attribute
+     * @return bool  false if could not find model or not succesful in updating
+     */
+    public function update(array $data, $id, $attribute = null);
+
+    /**
+     * Finds and fills a model by id, without persisting changes
+     *
+     * @param  array  $data
+     * @param  mixed  $id
+     * @param  string $attribute
+     * @return Model|false
+     */
+    public function fill(array $data, $id, $attribute = null);
+
+    /**
+     * Deletes a model by $id
+     *
+     * @param $id
+     * @return boolean
+     */
+    public function delete($id);
 
 
 }

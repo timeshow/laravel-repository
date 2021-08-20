@@ -21,7 +21,7 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        self::$packagePath = dirname(__DIR__);
+        self::$packagePath = __DIR__;
 
         $this->publishes(
             [
