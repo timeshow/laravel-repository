@@ -1,0 +1,22 @@
+{
+    "name": "timeshow/laravel-repository",
+    "description": "Repository for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "timeshow",
+            "email": "397975896@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/App",
+            "Contract\\": "src/Contract"
+        }
+    }
+}
