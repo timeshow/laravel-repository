@@ -29,6 +29,23 @@ php artisan vendor:publish --tag="repository"
 ```
 
 
+## Basic Usage
+
+Simply extend the (abstract) repository class of your choice, either `TimeShow\Repository\BaseRepository`, `TimeShow\Repository\ExtendedRepository` or `TimeShow\Repository\ExtendedPostProcessingRepository`.
+
+The only abstract method that must be provided is the `model` method (this is just like the way Bosnadev's repositories are used).
+
+
+### Make Repository
+
+The `make:repository` command automatically creates a new Eloquent model repository class.
+It will also attempt to link the correct Eloquent model, but make sure to confirm that it is properly set up.
+
+``` bash
+php artisan make:repository Test/TestRepository
+```
+
+
 ## Q&A
 question1: Unable to locate publishable resources.
 ``` bash

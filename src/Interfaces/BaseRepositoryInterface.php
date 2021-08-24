@@ -193,5 +193,128 @@ interface BaseRepositoryInterface
      */
     public function delete($id);
 
+    /**
+     * Applies callback to query for easier elaborate custom queries
+     * on all() calls.
+     *
+     * @param Closure $callback must return query/builder compatible
+     * @param array   $columns
+     * @return Collection
+     * @throws \Exception
+     */
+    public function allCallback(Closure $callback, $columns = ['*']);
+
+    /**
+     * Applies callback to query for easier elaborate custom queries
+     * on find (actually: ->first()) calls.
+     *
+     * @param Closure $callback must return query/builder compatible
+     * @param array   $columns
+     * @return Collection
+     * @throws \Exception
+     */
+    public function findCallback(Closure $callback, $columns = ['*']);
+
+
+    /**
+     * Returns a collection with the default criteria for the repository.
+     * These should be the criteria that apply for (almost) all calls
+     *
+     * Default set of criteria to apply to this repository
+     * Note that this also needs all the parameters to send to the constructor
+     * of each (and this CANNOT be solved by using the classname of as key,
+     * since the same Criteria may be applied more than once).
+     *
+     * @return Collection;
+     */
+    public function defaultCriteria();
+
+    /**
+     * Builds the default criteria and replaces the criteria stack to apply with
+     * the default collection.
+     *
+     * @return $this
+     */
+    public function restoreDefaultCriteria();
+
+    /**
+     * Sets criteria to empty collection
+     *
+     * @return $this
+     */
+    public function clearCriteria();
+
+    /**
+     * Sets or unsets ignoreCriteria flag. If it is set, all criteria (even
+     * those set to apply once!) will be ignored.
+     *
+     * @param bool $ignore
+     * @return $this
+     */
+    public function ignoreCriteria($ignore = true);
+
+    /**
+     * Returns a cloned set of all currently set criteria (not including
+     * those to be applied once).
+     *
+     * @return Collection
+     */
+    public function getCriteria();
+
+    /**
+     * Applies Criteria to the model for the upcoming query
+     *
+     * This takes the default/standard Criteria, then overrides
+     * them with whatever is found in the onceCriteria list
+     *
+     * @return $this
+     */
+    public function applyCriteria();
+
+    /**
+     * Pushes Criteria, optionally by identifying key
+     * If a criteria already exists for the key, it is overridden
+     *
+     * Note that this does NOT overrule any onceCriteria, even if set by key!
+     *
+     * @param CriteriaInterface $criteria
+     * @param string|null       $key          unique identifier to store criteria as
+     *                                        this may be used to remove and overwrite criteria
+     *                                        empty for normal automatic numeric key
+     * @return $this
+     */
+    public function pushCriteria(CriteriaInterface $criteria, $key = null);
+
+    /**
+     * Removes criteria by key, if it exists
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeCriteria($key);
+
+    /**
+     * Pushes Criteria, but only for the next call, resets to default afterwards
+     * Note that this does NOT work for specific criteria exclusively, it resets
+     * to default for ALL Criteria.
+     *
+     * @param CriteriaInterface $criteria
+     * @param string|null       $key
+     * @return $this
+     */
+    public function pushCriteriaOnce(CriteriaInterface $criteria, $key = null);
+
+    /**
+     * Removes Criteria, but only for the next call, resets to default afterwards
+     * Note that this does NOT work for specific criteria exclusively, it resets
+     * to default for ALL Criteria.
+     *
+     * In effect, this adds a NullCriteria to onceCriteria by key, disabling any criteria
+     * by that key in the normal criteria list.
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeCriteriaOnce($key);
 
 }

@@ -2,6 +2,8 @@
 namespace TimeShow\Repository;
 
 use TimeShow\Repository\Interfaces\BaseRepositoryInterface;
+use TimeShow\Repository\Interfaces\CriteriaInterface;
+use TimeShow\Repository\Criteria\NullCriteria;
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
@@ -36,6 +38,36 @@ abstract class BaseRepository implements BaseRepositoryInterface
     protected $model;
 
     /**
+     * Criteria to keep and use for all coming queries
+     *
+     * @var Collection|CriteriaInterface[]
+     */
+    protected $criteria;
+
+    /**
+     * The Criteria to only apply to the next query
+     *
+     * @var Collection|CriteriaInterface[]
+     */
+    protected $onceCriteria;
+
+    /**
+     * List of criteria that are currently active (updates when criteria are stripped)
+     * So this is a dynamic list that can change during calls of various repository
+     * methods that alter the active criteria.
+     *
+     * @var array|CriteriaInterface[]
+     */
+    protected $activeCriteria = null;
+
+    /**
+     * Whether to skip ALL criteria
+     *
+     * @var bool
+     */
+    protected $ignoreCriteria = false;
+
+    /**
      * Default number of paginated items
      *
      * @var integer
@@ -49,7 +81,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     public function __construct(App $app, Collection $collection)
     {
+        if ($collection->isEmpty()) {
+            $collection = $this->defaultCriteria();
+        }
+
         $this->app            = $app;
+        $this->criteria       = $collection;
+        $this->onceCriteria   = new Collection();
+        $this->activeCriteria = new Collection();
 
         $this->makeModel();
     }
@@ -395,6 +434,376 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function delete($id)
     {
         return $this->makeModel(false)->destroy($id);
+    }
+
+// -------------------------------------------------------------------------
+    //      With custom callback
+    // -------------------------------------------------------------------------
+
+    /**
+     * Applies callback to query for easier elaborate custom queries
+     * on all() calls.
+     *
+     * @param  Closure $callback must return query/builder compatible
+     * @param  array   $columns
+     * @return Collection
+     * @throws \Exception
+     */
+    public function allCallback(Closure $callback, $columns = ['*'])
+    {
+        /** @var EloquentBuilder $result */
+        $result = $callback( $this->query() );
+
+        $this->checkValidCustomCallback($result);
+
+        return $result->get($columns);
+    }
+
+    /**
+     * Applies callback to query for easier elaborate custom queries
+     * on find (actually: ->first()) calls.
+     *
+     * @param  Closure $callback must return query/builder compatible
+     * @param  array   $columns
+     * @return Collection
+     * @throws \Exception
+     */
+    public function findCallback(Closure $callback, $columns = ['*'])
+    {
+        /** @var EloquentBuilder $result */
+        $result = $callback( $this->query() );
+
+        $this->checkValidCustomCallback($result);
+
+        return $result->first($columns);
+    }
+
+    /**
+     * @param  Model|EloquentBuilder|DatabaseBuilder $result
+     * @throws InvalidArgumentException
+     */
+    protected function checkValidCustomCallback($result)
+    {
+        if (    ! is_a($result, Model::class)
+            &&  ! is_a($result, EloquentBuilder::class)
+            &&  ! is_a($result, DatabaseBuilder::class)
+        ) {
+            throw new InvalidArgumentException('Incorrect allCustom call in repository. The callback must return a QueryBuilder/EloquentBuilder or Model object.');
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    //      Criteria
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns a collection with the default criteria for the repository.
+     * These should be the criteria that apply for (almost) all calls
+     *
+     * Default set of criteria to apply to this repository
+     * Note that this also needs all the parameters to send to the constructor
+     * of each (and this CANNOT be solved by using the classname of as key,
+     * since the same Criteria may be applied more than once).
+     *
+     * Override with your own defaults (check ExtendedRepository's refreshed,
+     * named Criteria for examples).
+     *
+     * @return Collection|CriteriaInterface[]
+     */
+    public function defaultCriteria()
+    {
+        return new Collection();
+    }
+
+
+    /**
+     * Builds the default criteria and replaces the criteria stack to apply with
+     * the default collection.
+     *
+     * @return $this
+     */
+    public function restoreDefaultCriteria()
+    {
+        $this->criteria = $this->defaultCriteria();
+
+        return $this;
+    }
+
+
+    /**
+     * Sets criteria to empty collection
+     *
+     * @return $this
+     */
+    public function clearCriteria()
+    {
+        $this->criteria = new Collection();
+
+        return $this;
+    }
+
+    /**
+     * Sets or unsets ignoreCriteria flag. If it is set, all criteria (even
+     * those set to apply once!) will be ignored.
+     *
+     * @param  bool $ignore
+     * @return $this
+     */
+    public function ignoreCriteria($ignore = true)
+    {
+        $this->ignoreCriteria = $ignore;
+
+        return $this;
+    }
+
+    /**
+     * Returns a cloned set of all currently set criteria (not including
+     * those to be applied once).
+     *
+     * @return Collection|CriteriaInterface[]
+     */
+    public function getCriteria()
+    {
+        return clone $this->criteria;
+    }
+
+    /**
+     * Returns a cloned set of all currently set once criteria.
+     *
+     * @return Collection|CriteriaInterface[]
+     */
+    public function getOnceCriteria()
+    {
+        return clone $this->onceCriteria;
+    }
+
+    /**
+     * Returns a cloned set of all currently set criteria (not including
+     * those to be applied once).
+     *
+     * @return Collection|CriteriaInterface[]
+     */
+    public function getAllCriteria()
+    {
+        return $this->getCriteria()->merge($this->getOnceCriteria());
+    }
+
+    /**
+     * Returns the criteria that must be applied for the next query
+     *
+     * @return Collection|CriteriaInterface[]
+     */
+    protected function getCriteriaToApply()
+    {
+        // get the standard criteria
+        $criteriaToApply = $this->getCriteria();
+
+        // overrule them with criteria to be applied once
+        if ( ! $this->onceCriteria->isEmpty()) {
+
+            foreach ($this->onceCriteria as $onceKey => $onceCriteria) {
+
+                // if there is no key, we can only add the criteria
+                if (is_numeric($onceKey)) {
+
+                    $criteriaToApply->push($onceCriteria);
+                    continue;
+                }
+
+                // if there is a key, override or remove
+                // if Null, remove criteria
+                if (empty($onceCriteria) || is_a($onceCriteria, NullCriteria::class)) {
+
+                    $criteriaToApply->forget($onceKey);
+                    continue;
+                }
+
+                // otherwise, overide the criteria
+                $criteriaToApply->put($onceKey, $onceCriteria);
+            }
+        }
+
+        return $criteriaToApply;
+    }
+
+    /**
+     * Applies Criteria to the model for the upcoming query
+     *
+     * This takes the default/standard Criteria, then overrides
+     * them with whatever is found in the onceCriteria list
+     *
+     * @return $this
+     */
+    public function applyCriteria()
+    {
+        // if we're ignoring criteria, the model must be remade without criteria
+        if ($this->ignoreCriteria === true) {
+
+            // and make sure that they are re-applied when we stop ignoring
+            if ( ! $this->activeCriteria->isEmpty()) {
+                $this->makeModel();
+                $this->activeCriteria = new Collection();
+            }
+            return $this;
+        }
+
+        if ($this->areActiveCriteriaUnchanged()) return $this;
+
+        // if the new Criteria are different, clear the model and apply the new Criteria
+        $this->makeModel();
+
+        $this->markAppliedCriteriaAsActive();
+
+
+        // apply the collected criteria to the query
+        foreach ($this->getCriteriaToApply() as $criteria) {
+
+            if ($criteria instanceof CriteriaInterface) {
+
+                $this->model = $criteria->apply($this->model, $this);
+            }
+        }
+
+        $this->clearOnceCriteria();
+
+        return $this;
+    }
+
+    /**
+     * Checks whether the criteria that are currently pushed
+     * are the same as the ones that were previously applied
+     *
+     * @return bool
+     */
+    protected function areActiveCriteriaUnchanged()
+    {
+        return (    $this->onceCriteria->isEmpty()
+            &&  $this->criteria == $this->activeCriteria
+        );
+    }
+
+    /**
+     * Marks the active criteria so we can later check what
+     * is currently active
+     */
+    protected function markAppliedCriteriaAsActive()
+    {
+        $this->activeCriteria = $this->getCriteriaToApply();
+    }
+
+    /**
+     * After applying, removes the criteria that should only have applied once
+     */
+    protected function clearOnceCriteria()
+    {
+        if ( ! $this->onceCriteria->isEmpty()) {
+            $this->onceCriteria = new Collection();
+        }
+    }
+
+    /**
+     * Pushes Criteria, optionally by identifying key
+     * If a criteria already exists for the key, it is overridden
+     *
+     * Note that this does NOT overrule any onceCriteria, even if set by key!
+     *
+     * @param  CriteriaInterface $criteria
+     * @param  string|null       $key       unique identifier to store criteria as
+     *                                      this may be used to remove and overwrite criteria
+     *                                      empty for normal automatic numeric key
+     * @return $this
+     */
+    public function pushCriteria(CriteriaInterface $criteria, $key = null)
+    {
+        // standard bosnadev behavior
+        if (is_null($key)) {
+
+            $this->criteria->push($criteria);
+            return $this;
+        }
+
+        // set/override by key
+        $this->criteria->put($key, $criteria);
+
+        return $this;
+    }
+
+    /**
+     * Removes criteria by key, if it exists
+     *
+     * @param string $key
+     * @return $this
+     */
+    public function removeCriteria($key)
+    {
+        $this->criteria->forget($key);
+
+        return $this;
+    }
+
+    /**
+     * Pushes Criteria, but only for the next call, resets to default afterwards
+     * Note that this does NOT work for specific criteria exclusively, it resets
+     * to default for ALL Criteria.
+     *
+     * @param  CriteriaInterface $criteria
+     * @param  string|null       $key
+     * @return $this
+     */
+    public function pushCriteriaOnce(CriteriaInterface $criteria, $key = null)
+    {
+        if (is_null($key)) {
+
+            $this->onceCriteria->push($criteria);
+            return $this;
+        }
+
+        // set/override by key
+        $this->onceCriteria->put($key, $criteria);
+
+        return $this;
+    }
+
+
+    /**
+     * Removes Criteria, but only for the next call, resets to default afterwards
+     * Note that this does NOT work for specific criteria exclusively, it resets
+     * to default for ALL Criteria.
+     *
+     * In effect, this adds a NullCriteria to onceCriteria by key, disabling any criteria
+     * by that key in the normal criteria list.
+     *
+     * @param  string $key
+     * @return $this
+     */
+    public function removeCriteriaOnce($key)
+    {
+        // if not present in normal list, there is nothing to override
+        if ( ! $this->criteria->has($key)) return $this;
+
+        // override by key with Null-value
+        $this->onceCriteria->put($key, new NullCriteria);
+
+        return $this;
+    }
+
+    // ------------------------------------------------------------------------------
+    //      Misc.
+    // ------------------------------------------------------------------------------
+
+    /**
+     * Returns default per page count.
+     *
+     * @return int
+     */
+    protected function getDefaultPerPage()
+    {
+        $perPage = (is_numeric($this->perPage) && $this->perPage > 0)
+            ? $this->perPage
+            : $this->makeModel(false)->getPerPage();
+
+        return config('repository.perPage', $perPage);
     }
 
 
