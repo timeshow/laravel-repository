@@ -194,6 +194,24 @@ interface BaseRepositoryInterface
     public function delete($id);
 
     /**
+     * Increment a column's value by a given amount
+     * 增加
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @return int
+     */
+    public function increment($column, $amount = 1);
+
+    /**
+     * Decrement a column's value by a given amount
+     * 减少
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @return int
+     */
+    public function decrement($column, $amount = 1);
+
+    /**
      * Applies callback to query for easier elaborate custom queries
      * on all() calls.
      *

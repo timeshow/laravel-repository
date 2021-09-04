@@ -436,6 +436,30 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->makeModel(false)->destroy($id);
     }
 
+    /**
+     * Increment a column's value by a given amount
+     * 增加
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @return int
+     */
+    public function increment($column, $amount = 1)
+    {
+        return $this->makeModel->increment($column, $amount);
+    }
+
+    /**
+     * Decrement a column's value by a given amount
+     * 减少
+     * @param  string  $column
+     * @param  float|int  $amount
+     * @return int
+     */
+    public function decrement($column, $amount = 1)
+    {
+        return $this->makeModel->decrement($column, $amount);
+    }
+
 // -------------------------------------------------------------------------
     //      With custom callback
     // -------------------------------------------------------------------------
