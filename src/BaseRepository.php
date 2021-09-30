@@ -338,6 +338,55 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $model->get($columns);
     }
 
+    /**
+     * Find data by multiple values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereIn($field, array $values, $columns = ['*'])
+    {
+        return $this->query()
+            ->whereIn($field, $values)
+            ->get($columns);
+    }
+
+
+    /**
+     * Find data by excluding multiple values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereNotIn($field, array $values, $columns = ['*'])
+    {
+        return $this->query()
+            ->whereNotIn($field, $values)
+            ->get($columns);
+    }
+
+    /**
+     * Find data by between values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereBetween($field, array $values, $columns = ['*'])
+    {
+        return $this->query()
+            ->whereBetween($field, $values)
+            ->get($columns);
+    }
+
 
     // -------------------------------------------------------------------------
     //      Manipulation methods

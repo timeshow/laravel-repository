@@ -134,6 +134,39 @@ interface BaseRepositoryInterface
     public function findWhere($where, $columns = ['*'], $or = false);
 
     /**
+     * Find data by multiple values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereIn($field, array $values, $columns = ['*']);
+
+    /**
+     * Find data by excluding multiple values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereNotIn($field, array $values, $columns = ['*']);
+
+    /**
+     * Find data by between values in one field
+     *
+     * @param       $field
+     * @param array $values
+     * @param array $columns
+     *
+     * @return mixed
+     */
+    public function findWhereBetween($field, array $values, $columns = ['*']);
+
+    /**
      * Makes a new model without persisting it
      *
      * @param  array $data
