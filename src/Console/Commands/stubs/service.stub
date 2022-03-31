@@ -2,18 +2,9 @@
 
 namespace DummyNamespace;
 
-use BaseRepositoryNamespace;
 use DummyModelNamespace;
 
-class DummyClass extends BaseRepositoryClass
+class DummyClass
 {
-    /**
-     * Returns specified model class name.
-     *
-     * @return string
-     */
-    public function model()
-    {
-        return DummyModelClass::class;
-    }
+    //
 }
