@@ -1,10 +1,10 @@
 <?php
-
 namespace DummyNamespace;
-
-use DummyModelNamespace;
 
 class DummyClass
 {
-    //
+
+    public function __construct()
+    {
+    }
 }

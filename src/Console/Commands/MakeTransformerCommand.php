@@ -1,36 +1,35 @@
 <?php
-namespace TimeShow\Repository\Console\Commands;
+namespace App\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use TimeShow\Repository\RepositoryServiceProvider;
 
-class MakeServiceCommand extends GeneratorCommand
+class MakeTransformerCommand extends GeneratorCommand
 {
     /**
-     * The name and signature of the console command.
+     * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:service';
+    protected $name = 'make:transformer';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new service object class';
+    protected $description = 'Create a new transformer class';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'Service';
+    protected $type = 'Transformer';
 
     /**
      * @var string
      */
-    protected $namespace = 'App\\Services';
+    protected $namespace = 'App\\Transformers';
 
     /**
      * Get the stub file for the generator.
@@ -39,16 +38,16 @@ class MakeServiceCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return self::$packagePath . '/Console/Commands/stubs/service.stub';
+        return self::$packagePath . '/Console/Commands/stubs/transformer.stub';
     }
 
     /**
      * Get the default namespace for the class.
      *
-     * @param  string $rootNamespace
+     * @param string $rootNamespace
      * @return string
      */
-    public function getDefaultNamespace($rootNamespace)
+    protected function getDefaultNamespace($rootNamespace)
     {
         return $this->namespace;
     }

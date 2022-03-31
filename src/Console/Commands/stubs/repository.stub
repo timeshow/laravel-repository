@@ -1,5 +1,4 @@
 <?php
-
 namespace DummyNamespace;
 
 use BaseRepositoryNamespace;
