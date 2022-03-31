@@ -1,8 +1,10 @@
 <?php
 namespace TimeShow\Repository;
 
-use TimeShow\Repository\Console\Commands\MakeRepositoryCommand;
 use Illuminate\Support\ServiceProvider;
+use TimeShow\Repository\Console\Commands\MakeRepositoryCommand;
+use TimeShow\Repository\Console\Commands\MakeServiceCommand;
+use TimeShow\Repository\Console\Commands\MakeTransformerCommand;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -40,6 +42,8 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->commands([
             MakeRepositoryCommand::class,
+            MakeServiceCommand::class,
+            MakeTransformerCommand::class,
         ]);
     }
 

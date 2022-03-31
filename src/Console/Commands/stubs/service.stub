@@ -3,8 +3,13 @@ namespace DummyNamespace;
 
 class DummyClass
 {
+    protected $request;
 
-    public function __construct()
-    {
+    /**
+     * 构建函数
+     */
+    public function __construct(Request $request){
+        $this->request = $request;
     }
+
 }

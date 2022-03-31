@@ -39,7 +39,7 @@ class MakeServiceCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return self::$packagePath . '/Console/Commands/stubs/service.stub';
+        return RepositoryServiceProvider::$packagePath . '/Console/Commands/stubs/service.stub';
     }
 
     /**

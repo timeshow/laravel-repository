@@ -1,7 +1,8 @@
 <?php
-namespace App\Console\Commands;
+namespace TimeShow\Repository\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
+use TimeShow\Repository\RepositoryServiceProvider;
 
 class MakeTransformerCommand extends GeneratorCommand
 {
@@ -38,7 +39,7 @@ class MakeTransformerCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return self::$packagePath . '/Console/Commands/stubs/transformer.stub';
+        return RepositoryServiceProvider::$packagePath . '/Console/Commands/stubs/transformer.stub';
     }
 
     /**
