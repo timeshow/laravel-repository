@@ -1,6 +1,8 @@
 <?php
 namespace DummyNamespace;
 
+use Illuminate\Support\Facades\Request;
+
 class DummyClass
 {
     protected $request;
