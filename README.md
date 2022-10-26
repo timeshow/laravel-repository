@@ -6,7 +6,7 @@
  Laravel      | Package
 :-------------|:--------
  7.0     | 0.1.0
- 8.0     | last version
+ 8.0     | 1.0.0
 
 
 ## Install
