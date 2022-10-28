@@ -117,4 +117,5 @@ question1: Unable to locate publishable resources.
 ``` bash
 php artisan cache:clear
 php artisan config:clear
+php artisan route:clear
 ```

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace TimeShow\Repository;
 
 use Illuminate\Support\ServiceProvider;
@@ -12,16 +13,16 @@ class RepositoryServiceProvider extends ServiceProvider
     /**
      * The base package path.
      *
-     * @var string
+     * @var string|null
      */
-    public static $packagePath = null;
+    public static string|null $packagePath = null;
 
     /**
      * Bootstrap any application services.
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         self::$packagePath = __DIR__;
 

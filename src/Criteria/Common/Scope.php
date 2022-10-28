@@ -1,40 +1,37 @@
 <?php
+declare(strict_types=1);
 namespace TimeShow\Repository\Criteria\Common;
 
 use TimeShow\Repository\Criteria\AbstractCriteria;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as DatabaseBuilder;
 
 /**
  * Applies a SINGLE scope
+ *
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TRelated of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends AbstractCriteria<TModel, TRelated>
  */
 class Scope extends AbstractCriteria
 {
 
     /**
-     * @var string
-     */
-    protected $scope;
-
-    /**
-     * @var array
-     */
-    protected $parameters;
-
-
-    /**
      * @param string $scope
      * @param array  $parameters
      */
-    public function __construct($scope, array $parameters = [])
+    public function __construct(protected string $scope, protected array $parameters = [])
     {
-        $this->scope      = $scope;
-        $this->parameters = $parameters;
     }
 
     /**
-     * @param $model
-     * @return mixed
+     * @param TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel> $model
+     * @return TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel>
      */
-    protected function applyToQuery($model)
+    public function applyToQuery(Model|Relation|DatabaseBuilder|EloquentBuilder $model): Model|Relation|DatabaseBuilder|EloquentBuilder
     {
         $model = call_user_func_array([ $model, $this->scope ], $this->parameters);
 

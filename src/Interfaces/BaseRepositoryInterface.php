@@ -1,12 +1,20 @@
 <?php
 namespace TimeShow\Repository\Interfaces;
 
+use TimeShow\Repository\Exceptions\RepositoryException;
 use Closure;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Collection;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ */
 interface BaseRepositoryInterface
 {
     /**
@@ -14,62 +22,63 @@ interface BaseRepositoryInterface
      *
      * Note that this is the only abstract method.
      *
-     * @return string
+     * @return class-string<TModel>
      */
-    public function model();
+    public function model(): string;
 
     /**
      * Creates instance of model to start building query for
      *
      * @param bool $storeModel if true, this becomes a fresh $this->model property
-     * @return EloquentBuilder
+     * @return TModel
      * @throws RepositoryException
      */
-    public function makeModel($storeModel = true);
+    public function makeModel(bool $storeModel = true): Model;
 
     /**
      * Give unexecuted query for current criteria
      *
-     * @return EloquentBuilder
+     * @return EloquentBuilder<TModel>|BaseBuilder
      */
-    public function query();
+    public function query(): EloquentBuilder|BaseBuilder;
 
     /**
      * Does a simple count(*) for the model / scope
      *
      * @return int
      */
-    public function count();
+    public function count(): int;
 
     /**
      * Returns first match
      *
      * @param array $columns
-     * @return Model|null
+     * @return TModel|null
      */
-    public function first($columns = ['*']);
+    public function first(array $columns = ['*']): ?Model;
 
     /**
      * Returns first match or throws exception if not found
      *
      * @param array $columns
-     * @return Model
+     * @return TModel|null
      * @throws ModelNotFoundException
      */
-    public function firstOrFail($columns = ['*']);
+    public function firstOrFail(array $columns = ['*']): ?Model;
 
     /**
      * @param array $columns
      * @return mixed
      */
-    public function all($columns = ['*']);
+    public function all(array $columns = ['*']): EloquentCollection;
 
     /**
      * @param  string $value
-     * @param  string $key
-     * @return array
+     * @param  string|null $key
+     * @return Collection<int|string, mixed>
+     * @throws RepositoryException
      */
-    public function pluck($value, $key = null);
+    public function pluck(string $value, ?string $key = null): Collection;
 
     /**
      * @param  string $value
@@ -80,47 +89,47 @@ interface BaseRepositoryInterface
     public function lists($value, $key = null);
 
     /**
-     * @param int    $perPage
+     * @param int|null    $perPage
      * @param array  $columns
      * @param string $pageName
-     * @param null   $page
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param int|null   $page
+     * @return LengthAwarePaginator&iterable<int, TModel>
      */
-    public function paginate($perPage, $columns = ['*'], $pageName = 'page', $page = null);
+    public function paginate(?int $perPage = null, array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator;
 
     /**
      * @param  int|string  $id
      * @param  array       $columns
      * @param  string|null $attribute
-     * @return Model|null
+     * @return TModel|null
      */
-    public function find($id, $columns = ['*'], $attribute = null);
+    public function find(int|string $id, array $columns = ['*'], ?string $attribute = null): ?Model;
 
     /**
      * Returns first match or throws exception if not found
      *
      * @param  int|string $id
      * @param  array      $columns
-     * @return Model
+     * @return TModel
      * @throws ModelNotFoundException
      */
-    public function findOrFail($id, $columns = ['*']);
+    public function findOrFail(int|string $id, array $columns = ['*']): Model;
 
     /**
      * @param string $attribute
      * @param mixed  $value
      * @param array  $columns
-     * @return mixed
+     * @return TModel|null
      */
-    public function findBy($attribute, $value, $columns = ['*']);
+    public function findBy(string $attribute, mixed $value, array $columns = ['*']): ?Model;
 
     /**
      * @param string $attribute
      * @param mixed  $value
      * @param array  $columns
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findAllBy($attribute, $value, $columns = ['*']);
+    public function findAllBy(string $attribute, mixed $value, array $columns = ['*']): EloquentCollection;
 
     /**
      * Find a collection of models by the given query conditions.
@@ -129,9 +138,9 @@ interface BaseRepositoryInterface
      * @param array $columns
      * @param bool  $or
      *
-     * @return Collection|null
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhere($where, $columns = ['*'], $or = false);
+    public function findWhere(array $where, array $columns = ['*'], bool $or = false): EloquentCollection;
 
     /**
      * Find data by multiple values in one field
@@ -142,7 +151,7 @@ interface BaseRepositoryInterface
      *
      * @return mixed
      */
-    public function findWhereIn($field, array $values, $columns = ['*']);
+    public function findWhereIn($field, array $values, array $columns = ['*']);
 
     /**
      * Find data by excluding multiple values in one field
@@ -153,7 +162,7 @@ interface BaseRepositoryInterface
      *
      * @return mixed
      */
-    public function findWhereNotIn($field, array $values, $columns = ['*']);
+    public function findWhereNotIn($field, array $values, array $columns = ['*']);
 
     /**
      * Find data by between values in one field
@@ -164,15 +173,17 @@ interface BaseRepositoryInterface
      *
      * @return mixed
      */
-    public function findWhereBetween($field, array $values, $columns = ['*']);
+    public function findWhereBetween($field, array $values, array $columns = ['*']);
 
     /**
      * Makes a new model without persisting it
      *
      * @param  array $data
-     * @return Model
+     * @return TModel
+     *
+     * @throws MassAssignmentException|RepositoryException
      */
-    public function make(array $data);
+    public function make(array $data): Model;
 
     /**
      * Insert a model and returns it
@@ -186,45 +197,49 @@ interface BaseRepositoryInterface
      * Creates a model and returns it
      * 创建
      * @param array $data
-     * @return Model|null
+     * @return TModel|null
+     *
+     * @throws RepositoryException
      */
-    public function create(array $data);
+    public function create(array $data): ?Model;
 
     /**
      * Save a model and returns it
      * 保存
      * @param array $data
-     * @return Model|null
+     * @return TModel|null
      */
     public function save(array $data);
 
     /**
      * Updates a model by $id
      * 更新
-     * @param array  $data
-     * @param        $id
-     * @param string $attribute
+     * @param array<string, mixed>  $data
+     * @param int|string $id
+     * @param string|null $attribute
      * @return bool  false if could not find model or not succesful in updating
      */
-    public function update(array $data, $id, $attribute = null);
+    public function update(array $data, int|string $id, ?string $attribute = null): bool;
 
     /**
      * Finds and fills a model by id, without persisting changes
      *
-     * @param  array  $data
-     * @param  mixed  $id
-     * @param  string $attribute
-     * @return Model|false
+     * @param  array<string, mixed>  $data
+     * @param  int|string  $id
+     * @param  string|null $attribute
+     * @return TModel|false
+     *
+     * @throws MassAssignmentException|ModelNotFoundException
      */
-    public function fill(array $data, $id, $attribute = null);
+    public function fill(array $data, int|string $id, ?string $attribute = null): Model|false;
 
     /**
      * Deletes a model by $id
      * 删除
-     * @param $id
-     * @return boolean
+     * @param int|string $id
+     * @return int
      */
-    public function delete($id);
+    public function delete(int|string $id): int;
 
     /**
      * Increment a column's value by a given amount
@@ -250,10 +265,10 @@ interface BaseRepositoryInterface
      *
      * @param Closure $callback must return query/builder compatible
      * @param array   $columns
-     * @return Collection
-     * @throws \Exception
+     * @return EloquentCollection<int, TModel>
+     * @throws RepositoryException
      */
-    public function allCallback(Closure $callback, $columns = ['*']);
+    public function allCallback(Closure $callback, array $columns = ['*']): EloquentCollection;
 
     /**
      * Applies callback to query for easier elaborate custom queries
@@ -261,10 +276,10 @@ interface BaseRepositoryInterface
      *
      * @param Closure $callback must return query/builder compatible
      * @param array   $columns
-     * @return Collection
-     * @throws \Exception
+     * @return TModel|null
+     * @throws RepositoryException
      */
-    public function findCallback(Closure $callback, $columns = ['*']);
+    public function findCallback(Closure $callback, array $columns = ['*']): ?Model;
 
 
     /**
@@ -278,39 +293,54 @@ interface BaseRepositoryInterface
      *
      * @return Collection;
      */
-    public function defaultCriteria();
+    public function defaultCriteria(): Collection;
 
     /**
      * Builds the default criteria and replaces the criteria stack to apply with
      * the default collection.
      *
-     * @return $this
+     * @return void
      */
-    public function restoreDefaultCriteria();
+    public function restoreDefaultCriteria(): void;
 
     /**
      * Sets criteria to empty collection
      *
-     * @return $this
+     * @return void
      */
-    public function clearCriteria();
+    public function clearCriteria(): void;
 
     /**
      * Sets or unsets ignoreCriteria flag. If it is set, all criteria (even
      * those set to apply once!) will be ignored.
      *
      * @param bool $ignore
-     * @return $this
+     * @return void
      */
-    public function ignoreCriteria($ignore = true);
+    public function ignoreCriteria(bool $ignore = true): void;
 
     /**
      * Returns a cloned set of all currently set criteria (not including
      * those to be applied once).
      *
-     * @return Collection
+     * @return Collection<int|string, CriteriaInterface<TModel, Model>>
      */
-    public function getCriteria();
+    public function getCriteria(): Collection;
+
+    /**
+     * Returns a cloned set of all currently set once criteria.
+     *
+     * @return Collection<int|string, CriteriaInterface<TModel, Model>>
+     */
+    public function getOnceCriteria(): Collection;
+
+    /**
+     * Returns a cloned set of all currently set criteria (not including
+     * those to be applied once).
+     *
+     * @return Collection<int|string, CriteriaInterface<TModel, Model>>
+     */
+    public function getAllCriteria(): Collection;
 
     /**
      * Applies Criteria to the model for the upcoming query
@@ -318,9 +348,9 @@ interface BaseRepositoryInterface
      * This takes the default/standard Criteria, then overrides
      * them with whatever is found in the onceCriteria list
      *
-     * @return $this
+     * @return void
      */
-    public function applyCriteria();
+    public function applyCriteria(): void;
 
     /**
      * Pushes Criteria, optionally by identifying key
@@ -332,17 +362,17 @@ interface BaseRepositoryInterface
      * @param string|null       $key          unique identifier to store criteria as
      *                                        this may be used to remove and overwrite criteria
      *                                        empty for normal automatic numeric key
-     * @return $this
+     * @return void
      */
-    public function pushCriteria(CriteriaInterface $criteria, $key = null);
+    public function pushCriteria(CriteriaInterface $criteria, ?string $key = null): void;
 
     /**
      * Removes criteria by key, if it exists
      *
      * @param string $key
-     * @return $this
+     * @return void
      */
-    public function removeCriteria($key);
+    public function removeCriteria(string $key): void;
 
     /**
      * Pushes Criteria, but only for the next call, resets to default afterwards
@@ -351,9 +381,9 @@ interface BaseRepositoryInterface
      *
      * @param CriteriaInterface $criteria
      * @param string|null       $key
-     * @return $this
+     * @return static
      */
-    public function pushCriteriaOnce(CriteriaInterface $criteria, $key = null);
+    public function pushOnceCriteria(CriteriaInterface $criteria, ?string $key = null): static;
 
     /**
      * Removes Criteria, but only for the next call, resets to default afterwards
@@ -364,8 +394,8 @@ interface BaseRepositoryInterface
      * by that key in the normal criteria list.
      *
      * @param string $key
-     * @return $this
+     * @return static
      */
-    public function removeCriteriaOnce($key);
+    public function removeOnceCriteria(string $key): static;
 
 }

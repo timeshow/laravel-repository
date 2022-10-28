@@ -1,55 +1,44 @@
 <?php
+declare(strict_types=1);
 namespace TimeShow\Repository\Criteria\Common;
 
 use TimeShow\Repository\Criteria\AbstractCriteria;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as DatabaseBuilder;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TRelated of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends AbstractCriteria<TModel, TRelated>
+ */
 class OrderBy extends AbstractCriteria
 {
-    const DEFAULT_DIRECTION = 'asc';
+    private const DEFAULT_DIRECTION = 'asc';
 
     /**
-     * @var array
+     * @var array<string, string> column => direction
      */
-    protected $orderClauses = [];
+    protected array $orderClauses = [];
 
     /**
      * @param string|array  $columnOrArray     may be either a single column, in which the second parameter
      *                                         is used for direction, or an array of 'column' => 'direction' values
      * @param string        $direction         'asc'/'desc'
      */
-    public function __construct($columnOrArray, $direction = self::DEFAULT_DIRECTION)
+    public function __construct(string|array $columnOrArray, string $direction = self::DEFAULT_DIRECTION)
     {
-        if ( ! is_array($columnOrArray)) {
-            $columnOrArray = [ $columnOrArray => $direction ];
-
-        } else {
-            // make sure it is a proper array
-
-            $newColumns = [];
-
-            foreach ($columnOrArray as $column => $direction) {
-
-                if (is_numeric($column)) {
-                    $column    = $direction;
-                    $direction = self::DEFAULT_DIRECTION;
-                }
-
-                $newColumns[$column] = $direction;
-            }
-
-            $columnOrArray = $newColumns;
-        }
-
-        $this->orderClauses = $columnOrArray;
+        $this->orderClauses = $this->normalizeOrderClauses($columnOrArray, $direction);
     }
 
 
     /**
-     * @param Builder $model
-     * @return mixed
+     * @param TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel> $model
+     * @return TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel>
      */
-    public function applyToQuery($model)
+    public function applyToQuery(Model|Relation|DatabaseBuilder|EloquentBuilder $model): Model|Relation|DatabaseBuilder|EloquentBuilder
     {
         foreach ($this->orderClauses as $column => $direction) {
 
@@ -57,6 +46,33 @@ class OrderBy extends AbstractCriteria
         }
 
         return $model;
+    }
+
+    /**
+     * @param string|string[] $columnOrArray
+     * @param string          $direction
+     * @return array<string, string>
+     */
+    protected function normalizeOrderClauses(string|array $columnOrArray, string $direction): array
+    {
+        if (is_string($columnOrArray)) {
+            return [
+                $columnOrArray => $direction,
+            ];
+        }
+
+        $newColumns = [];
+
+        foreach ($columnOrArray as $column => $direction) {
+            if (is_numeric($column)) {
+                $column    = $direction;
+                $direction = self::DEFAULT_DIRECTION;
+            }
+
+            $newColumns[$column] = $direction;
+        }
+
+        return $newColumns;
     }
 
 }

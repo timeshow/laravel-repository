@@ -1,6 +1,10 @@
 {
     "name": "timeshow/laravel-repository",
     "description": "Repository for Laravel",
+    "keywords": [
+        "laravel",
+        "repository"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -12,7 +16,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.1"
+        "php" : "^8.1",
+        "illuminate/support": "^9.0",
+        "illuminate/database": "^9.0",
+        "myclabs/php-enum": "^1.7"
     },
     "autoload": {
         "psr-4": {

@@ -1,27 +1,34 @@
 <?php
+declare(strict_types=1);
 namespace TimeShow\Repository\Criteria\Common;
 
+use Closure;
 use TimeShow\Repository\Criteria\AbstractCriteria;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as DatabaseBuilder;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TRelated of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends AbstractCriteria<TModel, TRelated>
+ */
 class Custom extends AbstractCriteria
 {
     /**
-     * @var callable $query
+     * @param Closure $query
      */
-    protected $query;
-
-
-    public function __construct(callable $query)
+    public function __construct(protected Closure $query)
     {
-        $this->query = $query;
     }
 
     /**
-     * @param Builder $model
-     * @return mixed
+     * @param TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel> $model
+     * @return TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel>
      */
-    public function applyToQuery($model)
+    public function applyToQuery(Model|Relation|DatabaseBuilder|EloquentBuilder $model): Model|Relation|DatabaseBuilder|EloquentBuilder
     {
         $callable = $this->query;
 

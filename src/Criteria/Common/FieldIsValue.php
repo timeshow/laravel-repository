@@ -1,33 +1,34 @@
 <?php
+declare(strict_types=1);
 namespace TimeShow\Repository\Criteria\Common;
 
 use TimeShow\Repository\Criteria\AbstractCriteria;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder as DatabaseBuilder;
 
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TRelated of \Illuminate\Database\Eloquent\Model
+ *
+ * @extends AbstractCriteria<TModel, TRelated>
+ */
 class FieldIsValue extends AbstractCriteria
 {
     /**
-     * @var string field to where for
+     * @param string $field
+     * @param mixed $value
      */
-    protected $field;
-
-    /**
-     * @var mixed value to check for
-     */
-    protected $value;
-
-
-    public function __construct($field, $value = true)
+    public function __construct(protected string $field, protected mixed $value = true)
     {
-        $this->field = $field;
-        $this->value = $value;
     }
 
     /**
-     * @param Builder $model
-     * @return mixed
+     * @param TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel> $model
+     * @return TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel>
      */
-    public function applyToQuery($model)
+    public function applyToQuery(Model|Relation|DatabaseBuilder|EloquentBuilder $model): Model|Relation|DatabaseBuilder|EloquentBuilder
     {
         return $model->where($this->field, $this->value);
     }
