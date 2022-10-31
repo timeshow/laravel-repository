@@ -149,9 +149,9 @@ interface BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereIn($field, array $values, array $columns = ['*']);
+    public function findWhereIn($field, array $values, array $columns = ['*']): EloquentCollection;
 
     /**
      * Find data by excluding multiple values in one field
@@ -160,9 +160,9 @@ interface BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereNotIn($field, array $values, array $columns = ['*']);
+    public function findWhereNotIn($field, array $values, array $columns = ['*']): EloquentCollection;
 
     /**
      * Find data by between values in one field
@@ -171,9 +171,9 @@ interface BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereBetween($field, array $values, array $columns = ['*']);
+    public function findWhereBetween($field, array $values, array $columns = ['*']): EloquentCollection;
 
     /**
      * Makes a new model without persisting it
@@ -188,10 +188,10 @@ interface BaseRepositoryInterface
     /**
      * Insert a model and returns it
      * 插入
-     * @param array $attributes
-     * @return mixed
+     * @param array $data
+     * @return TModel|null
      */
-    public function insert(array $data);
+    public function insert(array $data): ?Model;
 
     /**
      * Creates a model and returns it
@@ -209,7 +209,7 @@ interface BaseRepositoryInterface
      * @param array $data
      * @return TModel|null
      */
-    public function save(array $data);
+    public function save(array $data): ?Model;
 
     /**
      * Updates a model by $id
@@ -248,7 +248,7 @@ interface BaseRepositoryInterface
      * @param  float|int  $amount
      * @return int
      */
-    public function increment($column, $amount = 1);
+    public function increment(string $column, float|int $amount = 1): int;
 
     /**
      * Decrement a column's value by a given amount
@@ -257,7 +257,7 @@ interface BaseRepositoryInterface
      * @param  float|int  $amount
      * @return int
      */
-    public function decrement($column, $amount = 1);
+    public function decrement(string $column, float|int $amount = 1): int;
 
     /**
      * Applies callback to query for easier elaborate custom queries

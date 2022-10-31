@@ -366,9 +366,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereIn($field, array $values, $columns = ['*'])
+    public function findWhereIn($field, array $values, $columns = ['*']): EloquentCollection
     {
         return $this->query()
             ->whereIn($field, $values)
@@ -383,9 +383,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereNotIn($field, array $values, $columns = ['*'])
+    public function findWhereNotIn($field, array $values, $columns = ['*']): EloquentCollection
     {
         return $this->query()
             ->whereNotIn($field, $values)
@@ -399,9 +399,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array $values
      * @param array $columns
      *
-     * @return mixed
+     * @return EloquentCollection<int, TModel>
      */
-    public function findWhereBetween($field, array $values, $columns = ['*'])
+    public function findWhereBetween($field, array $values, $columns = ['*']): EloquentCollection
     {
         return $this->query()
             ->whereBetween($field, $values)
@@ -431,7 +431,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  array $data
      * @return Model|null
      */
-    public function insert(array $data)
+    public function insert(array $data): ?Model
     {
         return $this->makeModel(false)->insert($data);
     }
@@ -454,7 +454,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  array $data
      * @return Model|null
      */
-    public function save(array $data)
+    public function save(array $data): ?Model
     {
         return $this->makeModel(false)->save($data);
     }
@@ -515,9 +515,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  float|int  $amount
      * @return int
      */
-    public function increment($column, $amount = 1)
+    public function increment(string $column, float|int $amount = 1): int
     {
-        return $this->makeModel->increment($column, $amount);
+        return $this->makeModel(false)->increment($column, $amount);
     }
 
     /**
@@ -527,9 +527,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  float|int  $amount
      * @return int
      */
-    public function decrement($column, $amount = 1)
+    public function decrement(string $column, float|int $amount = 1): int
     {
-        return $this->makeModel->decrement($column, $amount);
+        return $this->makeModel(false)->decrement($column, $amount);
     }
 
 // -------------------------------------------------------------------------
@@ -819,7 +819,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     public function pushCriteria(CriteriaInterface $criteria, ?string $key = null): void
     {
-        // standard bosnadev behavior
         if ($key === null) {
             $this->criteria->push($criteria);
             return;

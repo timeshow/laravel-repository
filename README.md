@@ -119,3 +119,63 @@ php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
 ```
+
+## Methods
+Use Methods: Find all results in Repository.
+``` bash
+#通过Repository获取所有结果
+$posts = $this->repository->all();
+
+#通过Repository获取分页结果
+$posts = $this->repository->paginate($limit = null, $columns = ['*']);
+
+#通过id获取结果
+$post = $this->repository->find($id);
+
+#隐藏Model的属性
+$post = $this->repository->hidden(['country_id'])->find($id);
+
+#显示Model指定属性
+$post = $this->repository->visible(['id', 'state_id'])->find($id);
+
+#加载Model关联关系
+$post = $this->repository->with(['state'])->find($id);
+
+#根据字段名称获取结果
+$posts = $this->repository->findByField('country_id','15');
+
+#根据多个字段获取结果
+$posts = $this->repository->findWhere([
+    //Default Condition =
+    'state_id'=>'10',
+    'country_id'=>'15',
+    //Custom Condition
+    ['columnName','>','10']
+]);
+
+#根据某一字段的多个值获取结果
+$posts = $this->repository->findWhereIn('id', [1,2,3,4,5]);
+
+#获取不包含某一字段的指定值的结果
+$posts = $this->repository->findWhereNotIn('id', [6,7,8,9,10]);
+
+#通过自定义scope获取结果
+$posts = $this->repository->scopeQuery(function($query){
+    return $query->orderBy('sort_order','asc');
+})->all();
+
+#在`Repository`中创建数据
+$post = $this->repository->create( Input::all() );
+
+#在`Repository`中更新数据
+$post = $this->repository->update( Input::all(), $id );
+
+#在`Repository`中删除数据
+$this->repository->delete($id)
+
+#在`Repository`中通过多字段删除数据
+$this->repository->deleteWhere([
+    'state_id'=>'10',
+    'country_id'=>'15',
+])
+```

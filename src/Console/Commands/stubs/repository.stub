@@ -11,7 +11,7 @@ class DummyClass extends BaseRepositoryClass
      *
      * @return string
      */
-    public function model()
+    public function model(): string
     {
         return DummyModelClass::class;
     }
