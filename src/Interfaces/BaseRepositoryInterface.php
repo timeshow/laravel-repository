@@ -95,7 +95,17 @@ interface BaseRepositoryInterface
      * @param int|null   $page
      * @return LengthAwarePaginator&iterable<int, TModel>
      */
-    public function paginate(?int $perPage = null, array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator;
+    public function paginate(?int $perPage = null, string|array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator;
+
+    /**
+     * Retrieve all data of repository, paginated
+     *
+     * @param mixed  $perPage
+     * @param string|array $columns
+     *
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function simplePaginate(mixed $perPage = null, string|array $columns = ['*']);
 
     /**
      * @param  int|string  $id
@@ -239,7 +249,7 @@ interface BaseRepositoryInterface
      * @param int|string $id
      * @return int
      */
-    public function delete(int|string $id): int;
+    public function delete(array|int|string $ids): int;
 
     /**
      * Increment a column's value by a given amount
@@ -280,6 +290,46 @@ interface BaseRepositoryInterface
      * @throws RepositoryException
      */
     public function findCallback(Closure $callback, array $columns = ['*']): ?Model;
+
+    /**
+     * Set hidden fields
+     *
+     * @param array $fields
+     *
+     * @return TModel|null
+     * @throws RepositoryExceptions
+     */
+    public function hidden(array $fields): ?Model;
+
+    /**
+     * Order collection by a given column
+     *
+     * @param string $column
+     * @param null|string $direction
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function orderBy(string $column, null|string $direction = 'asc'): ?Model;
+
+    /**
+     * Load relations
+     *
+     * @param $relations
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function with($relations): ?Model;
+
+    /**
+     * Add subselect queries to count the relations.
+     *
+     * @param  mixed $relations
+     * @return TModel|null
+     * @throws RepositoryExceptions
+     */
+    public function withCount(mixed $relations): ?Model;
 
 
     /**

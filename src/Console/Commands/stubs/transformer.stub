@@ -5,13 +5,17 @@ use League\Fractal\TransformerAbstract;
 
 class DummyClass extends TransformerAbstract
 {
-    protected $availableIncludes = [];
-    protected $defaultIncludes = [];
+    protected array $availableIncludes = [];
+    protected array $defaultIncludes = [];
 
     public function transform($item)
     {
         return [
-            'id' => $item->id
+            ...$this->pluckAttributes($item, [
+                'id',
+
+            ]),
+            ...$this->getTimestamps($item),
         ];
     }
 }

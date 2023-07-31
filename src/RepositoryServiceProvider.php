@@ -14,6 +14,7 @@ class RepositoryServiceProvider extends ServiceProvider
      * The base package path.
      *
      * @var string|null
+     * @var string|null
      */
     public static string|null $packagePath = null;
 

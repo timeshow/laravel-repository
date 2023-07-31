@@ -78,7 +78,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      *
      * @var integer
      */
-    protected int $perPage = 1;
+    protected int $perPage = 15;
 
     /**
      * @param ContainerInterface                                       $app
@@ -237,17 +237,26 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  int|null   $page
      * @return LengthAwarePaginator&iterable<int, TModel>
      */
-    public function paginate(?int $perPage = null, array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator
+    public function paginate(?int $perPage = null, string|array $columns = ['*'], string $pageName = 'page', ?int $page = null): LengthAwarePaginator
     {
         $perPage = $perPage ?: $this->getDefaultPerPage();
-        // Get the per page max
-        $perPageMax = config('repository.pagination.pageMax', 1000);
-        if ($perPage > $perPageMax) {
-            $perPage = $perPageMax;
-        }
 
         return $this->query()
             ->paginate($perPage, $columns, $pageName, $page);
+    }
+
+    /**
+     * @param  mixed $perPage
+     * @param string|array $columns
+     *
+     * @return \Illuminate\Contracts\Pagination\Paginator
+     */
+    public function simplePaginate(mixed $perPage = null, string|array $columns = ['*'], string $pageName = 'page', mixed $page = null)
+    {
+        $perPage = $perPage ?: $this->getDefaultPerPage();
+
+        return $this->query()
+            ->simplePaginate($perPage, $columns, $pageName, $page);
     }
 
     /**
@@ -499,13 +508,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Deletes a model by id
      * 删除
-     * @param int|string $id
+     * @param array|int|string $ids
      * @return int
      * @throws RepositoryException
      */
-    public function delete(int|string $id): int
+    public function delete(array|int|string $ids): int
     {
-        return $this->makeModel(false)->destroy($id);
+        return $this->makeModel(false)->destroy($ids);
     }
 
     /**
@@ -572,6 +581,59 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->assertValidCustomCallback($result);
 
         return $result->first($columns);
+    }
+
+    /**
+     * Set hidden fields
+     *
+     * @param array $fields
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function hidden(array $fields): ?Model
+    {
+        return $this->model()->setHidden($fields);
+    }
+
+    /**
+     * Set the "orderBy" value of the query.
+     *
+     * @param string  $column
+     * @param null|string $direction
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function orderBy(mixed $column, null|string $direction = 'asc'): ?Model
+    {
+        return $this->model()->orderBy($column, $direction);
+    }
+
+    /**
+     * Load relations
+     *
+     * @param array|string $relations
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function with($relations): ?Model
+    {
+        return $this->model()->with($relations);
+    }
+
+    /**
+     * Add subselect queries to count the relations.
+     *
+     * @param mixed $relations
+     *
+     * @return TModel|null
+     * @throws RepositoryException
+     */
+    public function withCount($relations): ?Model
+    {
+        return $this->model()->withCount($relations);
     }
 
     /**
@@ -904,6 +966,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         try {
             $perPage = $this->perPage ?: $this->makeModel(false)->getPerPage();
+            // Get the per page max
+            $perPageMax = config('repository.pagination.pageMax', 1000);
+            if ($perPage > $perPageMax) {
+                $perPage = $perPageMax;
+            }
         } catch (RepositoryException) {
             $perPage = 50;
         }

@@ -18,7 +18,7 @@ $ composer require timeshow/laravel-repository
 
 If you want to use the repository generator through the `make:repository` Artisan command, add the `RepositoryServiceProvider` to your `config/app.php`:
 
-``` php
+``` bash   
 TimeShow\Repository\RepositoryServiceProvider::class,
 ```
 
@@ -50,6 +50,8 @@ The only abstract method that must be provided is the `model` method (this is ju
     public function lists($value, $key = null);
 
     public function paginate($perPage, $columns = ['*'], $pageName = 'page', $page = null);
+    
+    public function simplePaginate($perPage, $columns = ['*']);
 
     public function find($id, $columns = ['*'], $attribute = null);
 
@@ -129,6 +131,9 @@ $posts = $this->repository->all();
 #通过Repository获取分页结果
 $posts = $this->repository->paginate($limit = null, $columns = ['*']);
 
+#通过Repository获取分页结果
+$posts = $this->repository->simplePaginate($limit = 5, $columns = ['*']);
+
 #通过id获取结果
 $post = $this->repository->find($id);
 
@@ -142,7 +147,8 @@ $post = $this->repository->visible(['id', 'state_id'])->find($id);
 $post = $this->repository->with(['state'])->find($id);
 
 #根据字段名称获取结果
-$posts = $this->repository->findByField('country_id','15');
+$posts = $this->repository->findBy('country_id', '15');
+$posts = $this->repository->findBy('title', $title);
 
 #根据多个字段获取结果
 $posts = $this->repository->findWhere([
