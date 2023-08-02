@@ -1,10 +1,13 @@
 <?php
 namespace DummyNamespace;
 
+use App\Helpers\TransformerHelper;
 use League\Fractal\TransformerAbstract;
 
 class DummyClass extends TransformerAbstract
 {
+    use TransformerHelper;
+
     protected array $availableIncludes = [];
     protected array $defaultIncludes = [];
 
