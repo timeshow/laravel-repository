@@ -185,3 +185,11 @@ $this->repository->deleteWhere([
     'country_id'=>'15',
 ])
 ```
+
+## Thanks
+---
+Thanks for the contributors (github.com)
+```bash
+w29247
+myxpla
+```
