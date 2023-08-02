@@ -35,8 +35,6 @@ W
 composer.lock,c/3/c3262e2a0879195bd6a727e90f768bc85ad79ffd
 ^
 .src/Console/Commands/MakeRepositoryCommand.php,4/9/49d88f2d62ebfcf2124dc9693dd0babf56990c5d
-_
-/src/Console/Commands/MakeTransformerCommand.php,7/3/732e0115e8126a0b8c44b112fa778f2813a57ada
 J
 src/ExtendedRepository.php,3/b/3b461ee2fff4eab19805d06057afb092dde0b4b6
 [
