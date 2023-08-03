@@ -190,6 +190,6 @@ $this->repository->deleteWhere([
 ---
 Thanks for the contributors (github.com)
 ```bash
-w29247
-myxpla
+Wyj
+Harry
 ```
