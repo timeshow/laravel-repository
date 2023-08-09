@@ -69,7 +69,7 @@ class RequestCriteriaColumn
         return $this;
     }
 
-    public function searchFieldName(bool $searchPrefix): string
+    public function searchFieldName(bool $searchPrefix = false): string
     {
         if (!$this->searchable) {
             return '';
@@ -83,7 +83,7 @@ class RequestCriteriaColumn
 
     }
 
-    public function sortableFieldName(bool $searchPrefix): string
+    public function sortableFieldName(bool $searchPrefix = false): string
     {
         if (!$this->sortable) {
             return '';
