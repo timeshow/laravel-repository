@@ -12,6 +12,9 @@ return [
     |--------------------------------------------------------------------------
     */
     'pagination' => [
+        'pagePrefix' => 'page',
+        'sizePrefix' => 'size',
+        'totalPrefix' => 'total',
         'limit' => 15,
         'pageMax' => 500,
     ],

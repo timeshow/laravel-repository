@@ -46,9 +46,9 @@ class RequestCriteria extends AbstractCriteria
     public function getPaginate(): array
     {
         return [
-            'size' => $this->size,
-            'page' => $this->page,
-            'total' => $this->total,
+            config('repository.pagination.pagePrefix') => $this->page,
+            config('repository.pagination.sizePrefix') => $this->size,
+            config('repository.pagination.totalPrefix') => $this->total,
         ];
     }
 
