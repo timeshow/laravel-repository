@@ -3,43 +3,48 @@
 
 ## Version Compatibility
 
- Laravel      | Package
-:-------------|:--------
- 7.0     | 0.1.0
- 8.0     | 1.0.0
- 9.0     | last version
+| Laravel  | Package      |
+|:---------|:-------------|
+| 7.0      | 0.1.0        |
+| 8.0      | 1.0.0        |
+| 9.0,10.0 | last version |
 
 ## Install
 Via Composer
 
-``` bash
+```php
 $ composer require timeshow/laravel-repository
 ```
 
 If you want to use the repository generator through the `make:repository` Artisan command, add the `RepositoryServiceProvider` to your `config/app.php`:
 
-``` bash   
+```php   
 TimeShow\Repository\RepositoryServiceProvider::class,
 ```
 
 Publish the repostory configuration file.
 
-``` bash
+```php
 php artisan vendor:publish --tag="repository"
 ```
 
 ## Config
 
-You must first configure the storage location of the repository files. 
-
+You must first configure the storage location of the repository files.
+you use it by extending the location repository files of your choice.
 ```php
     ...
     'pagination' => [
         'pagePrefix' => 'page',  // pageIndex
         'sizePrefix' => 'size',  // pageSize
-        'totalPrefix' => 'total',
+        'totalPrefix' => 'total', // count
         'limit' => 15,
         'pageMax' => 500,
+    ],
+
+    'field' => [
+        'orderPrefix' => '',  // o_
+        'searchPrefix' => '', // f_
     ],
 ```
 
@@ -49,7 +54,7 @@ Simply extend the (abstract) repository class of your choice, either `TimeShow\R
 
 The only abstract method that must be provided is the `model` method (this is just like the way Bosnadev's repositories are used).
 
-``` bash
+```php
 
     public function count();
 
@@ -107,7 +112,7 @@ The only abstract method that must be provided is the `model` method (this is ju
 The `make:repository` command automatically creates a new Eloquent model repository class.
 It will also attempt to link the correct Eloquent model, but make sure to confirm that it is properly set up.
 
-``` bash
+```php
 php artisan make:repository Test/TestRepository
 ```
 
@@ -115,7 +120,7 @@ php artisan make:repository Test/TestRepository
 
 The `make:service` command automatically creates a new service object class.
 
-``` bash
+```php
 php artisan make:service Test/TestService
 ```
 
@@ -136,9 +141,23 @@ php artisan config:clear
 php artisan route:clear
 ```
 
+## Getting results from Criteria
+```php
+$posts = $this->repository->pushCriteria(new OrderBy('id', 'desc'));         
+$posts = $this->repository->pushCriteria(new FieldIsValue('name', 'value')); // =
+$posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // !=
+$posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // <
+$posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // <=
+$posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // >
+$posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // >=
+$posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));     // like
+
+
+```
+
 ## Methods
 Use Methods: Find all results in Repository.
-``` bash
+```php
 #通过Repository获取所有结果
 $posts = $this->repository->all();
 
@@ -198,6 +217,30 @@ $this->repository->deleteWhere([
     'state_id'=>'10',
     'country_id'=>'15',
 ])
+```
+
+## Presenter
+can you prompt for creating a Transformer too if you haven't already.
+```php
+use TimeShow\Repository\Presenter\FractalPresenter;
+
+class PostPresenter extends FractalPresenter {
+
+    /**
+     * Prepare data to present
+     *
+     * @return \League\Fractal\TransformerAbstract
+     */
+    public function transformer()
+    {
+        return new PostTransformer();
+    }
+}
+```
+Or enable it in your controller with
+```php
+$presenter = FractalPresenter::from($this->transformer);
+...$presenter->collection($data)
 ```
 
 ## Thanks
