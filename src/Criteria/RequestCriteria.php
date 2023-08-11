@@ -14,7 +14,7 @@ class RequestCriteria extends AbstractCriteria
 {
     protected int $page = 1;
 
-    protected int $pageSize = 10;
+    protected int $size = 10;
 
     /** @var array<RequestCriteriaColumn> */
     protected array $columns = [];
@@ -28,13 +28,20 @@ class RequestCriteria extends AbstractCriteria
 
     protected array $relations = [];
 
+    protected string $pagePrefix;
+    protected string $sizePrefix;
+    protected string $totalPrefix;
+
     public function __construct(protected Request $request)
     {
-        if ($this->request->query->has('pageIndex')) {
-            $this->page = (int) $this->request->query('pageIndex');
+        $this->pagePrefix = config('repository.pagination.pagePrefix');
+        $this->sizePrefix = config('repository.pagination.sizePrefix');
+        $this->totalPrefix = config('repository.pagination.totalPrefix');
+        if ($this->request->query->has($this->pagePrefix)) {
+            $this->page = (int) $this->request->query($this->pagePrefix);
         }
-        if ($this->request->query->has('pageSize')) {
-            $this->pageSize = (int) $this->request->query('pageSize');
+        if ($this->request->query->has($this->sizePrefix)) {
+            $this->size = (int) $this->request->query($this->sizePrefix);
         }
     }
 
@@ -53,9 +60,9 @@ class RequestCriteria extends AbstractCriteria
     public function getPaginate(): array
     {
         return [
-            'pageSize' => $this->pageSize,
-            'pageIndex' => $this->page,
-            'total' => $this->total,
+            $this->pagePrefix => $this->size,
+            $this->sizePrefix => $this->page,
+            $this->totalPrefix => $this->total,
         ];
     }
 
@@ -143,7 +150,7 @@ class RequestCriteria extends AbstractCriteria
         if ($this->isPagination) {
             $this->total = $model->count();
 
-            return $model->forPage($this->page, $this->pageSize);
+            return $model->forPage($this->page, $this->size);
         }
 
         return $model;

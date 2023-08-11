@@ -19,6 +19,11 @@ return [
         'pageMax' => 500,
     ],
 
+    'field' => [
+        'orderPrefix' => 'o_',
+        'searchPrefix' => 'f_',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Generator Config

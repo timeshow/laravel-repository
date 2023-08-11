@@ -4,16 +4,18 @@ namespace TimeShow\Repository\Criteria;
 
 use TimeShow\Repository\Criteria\Common\FieldIsValue;
 use TimeShow\Repository\Criteria\Common\FieldLikeValue;
+use TimeShow\Repository\Criteria\Common\GreaterThan;
+use TimeShow\Repository\Criteria\Common\GreaterThanOrEqual;
+use TimeShow\Repository\Criteria\Common\LessThan;
 use TimeShow\Repository\Criteria\Common\LessThanOrEqual;
 use TimeShow\Repository\Criteria\Common\NotEqual;
-use TimeShow\Repository\Criteria\NullCriteria;
 use TimeShow\Repository\Interfaces\CriteriaInterface;
 
 class RequestCriteriaColumn
 {
-    const FIELD_ORDER_PREFIX = 'o_';
+    public string $orderPrefix;
 
-    const FIELD_SEARCH_PREFIX = 'f_';
+    public string $searchPrefix;
 
     public bool $searchable = false;
 
@@ -27,6 +29,8 @@ class RequestCriteriaColumn
 
     public function __construct(public string $field)
     {
+        $this->orderPrefix = config('repository.field.orderPrefix');
+        $this->searchPrefix = config('repository.field.searchPrefix');
         $this->criteria = new NullCriteria();
     }
 
@@ -75,7 +79,7 @@ class RequestCriteriaColumn
             return '';
         }
 
-        return self::FIELD_SEARCH_PREFIX.$this->field;
+        return $this->searchPrefix.$this->field;
     }
 
     public function sortableFieldName(): string
@@ -84,15 +88,18 @@ class RequestCriteriaColumn
             return '';
         }
 
-        return self::FIELD_ORDER_PREFIX.$this->field;
+        return $this->orderPrefix.$this->field;
     }
 
     public function matchCriteria($fieldVal): CriteriaInterface
     {
         return match ($this->searchOption) {
             '=' => new FieldIsValue($this->field, $fieldVal),
-            '~=' => new NotEqual($this->field, $fieldVal),
-            '<' => new LessThanOrEqual($this->field, $fieldVal),
+            '!=' => new NotEqual($this->field, $fieldVal),
+            '<' => new LessThan($this->field, $fieldVal),
+            '<=' => new LessThanOrEqual($this->field, $fieldVal),
+            '>' => new GreaterThan($this->field, $fieldVal),
+            '>=' => new GreaterThanOrEqual($this->field, $fieldVal),
             'like' => new FieldLikeValue($this->field, $fieldVal),
             'custom' => $this->criteria,
             default => new NullCriteria()
