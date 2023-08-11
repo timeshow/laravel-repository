@@ -13,28 +13,35 @@ use TimeShow\Repository\Interfaces\CriteriaInterface;
 class RequestCriteria extends AbstractCriteria
 {
     protected int $page = 1;
-    protected int $size = 10;
+
+    protected int $pageSize = 10;
+
     /** @var array<RequestCriteriaColumn> */
     protected array $columns = [];
+
     protected int $total = 0;
+
     protected bool $isPagination = true;
+
     /** @var array<CriteriaInterface> */
     protected array $globalCriteriaList = [];
+
     protected array $relations = [];
 
     public function __construct(protected Request $request)
     {
-        if ($this->request->query->has('page')) {
-            $this->page = (int) $this->request->query('page');
+        if ($this->request->query->has('pageIndex')) {
+            $this->page = (int) $this->request->query('pageIndex');
         }
-        if ($this->request->query->has('size')) {
-            $this->size = (int) $this->request->query('size');
+        if ($this->request->query->has('pageSize')) {
+            $this->pageSize = (int) $this->request->query('pageSize');
         }
     }
 
     public function disablePagination(): static
     {
         $this->isPagination = false;
+
         return $this;
     }
 
@@ -46,9 +53,9 @@ class RequestCriteria extends AbstractCriteria
     public function getPaginate(): array
     {
         return [
-            config('repository.pagination.pagePrefix') => $this->page,
-            config('repository.pagination.sizePrefix') => $this->size,
-            config('repository.pagination.totalPrefix') => $this->total,
+            'pageSize' => $this->pageSize,
+            'pageIndex' => $this->page,
+            'total' => $this->total,
         ];
     }
 
@@ -136,10 +143,9 @@ class RequestCriteria extends AbstractCriteria
         if ($this->isPagination) {
             $this->total = $model->count();
 
-            return $model->forPage($this->page, $this->size);
+            return $model->forPage($this->page, $this->pageSize);
         }
 
         return $model;
     }
-
 }

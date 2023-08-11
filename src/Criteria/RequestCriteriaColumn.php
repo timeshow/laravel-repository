@@ -1,14 +1,9 @@
 <?php
 declare(strict_types=1);
-
 namespace TimeShow\Repository\Criteria;
-
 
 use TimeShow\Repository\Criteria\Common\FieldIsValue;
 use TimeShow\Repository\Criteria\Common\FieldLikeValue;
-use TimeShow\Repository\Criteria\Common\GreaterThan;
-use TimeShow\Repository\Criteria\Common\GreaterThanOrEqual;
-use TimeShow\Repository\Criteria\Common\LessThan;
 use TimeShow\Repository\Criteria\Common\LessThanOrEqual;
 use TimeShow\Repository\Criteria\Common\NotEqual;
 use TimeShow\Repository\Criteria\NullCriteria;
@@ -17,12 +12,17 @@ use TimeShow\Repository\Interfaces\CriteriaInterface;
 class RequestCriteriaColumn
 {
     const FIELD_ORDER_PREFIX = 'o_';
+
     const FIELD_SEARCH_PREFIX = 'f_';
+
     public bool $searchable = false;
-    public bool $searchPrefix = false;
+
     public string $searchOption = 'like';
+
     public bool $sortable = false;
+
     public string $sortDirection = 'asc';
+
     public CriteriaInterface $criteria;
 
     public function __construct(public string $field)
@@ -69,31 +69,22 @@ class RequestCriteriaColumn
         return $this;
     }
 
-    public function searchFieldName(bool $searchPrefix = false): string
+    public function searchFieldName(): string
     {
-        if (!$this->searchable) {
+        if (! $this->searchable) {
             return '';
         }
 
-        $this->searchPrefix = $searchPrefix;
-        if ($this->searchPrefix) {
-            return self::FIELD_SEARCH_PREFIX . $this->field;
-        }
-        return $this->field;
-
+        return self::FIELD_SEARCH_PREFIX.$this->field;
     }
 
-    public function sortableFieldName(bool $searchPrefix = false): string
+    public function sortableFieldName(): string
     {
-        if (!$this->sortable) {
+        if (! $this->sortable) {
             return '';
         }
 
-        $this->searchPrefix = $searchPrefix;
-        if ($this->searchPrefix) {
-            return self::FIELD_ORDER_PREFIX . $this->field;
-        }
-        return $this->field;
+        return self::FIELD_ORDER_PREFIX.$this->field;
     }
 
     public function matchCriteria($fieldVal): CriteriaInterface
@@ -101,13 +92,11 @@ class RequestCriteriaColumn
         return match ($this->searchOption) {
             '=' => new FieldIsValue($this->field, $fieldVal),
             '~=' => new NotEqual($this->field, $fieldVal),
-            '<' => new LessThan($this->field, $fieldVal),
-            '<=' => new LessThanOrEqual($this->field, $fieldVal),
-            '>' => new GreaterThan($this->field, $fieldVal),
-            '>=' => new GreaterThanOrEqual($this->field, $fieldVal),
+            '<' => new LessThanOrEqual($this->field, $fieldVal),
             'like' => new FieldLikeValue($this->field, $fieldVal),
             'custom' => $this->criteria,
             default => new NullCriteria()
         };
     }
 }
+

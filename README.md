@@ -28,6 +28,20 @@ Publish the repostory configuration file.
 php artisan vendor:publish --tag="repository"
 ```
 
+## Config
+
+You must first configure the storage location of the repository files. 
+
+```php
+    ...
+    'pagination' => [
+        'pagePrefix' => 'page',  // pageIndex
+        'sizePrefix' => 'size',  // pageSize
+        'totalPrefix' => 'total',
+        'limit' => 15,
+        'pageMax' => 500,
+    ],
+```
 
 ## Basic Usage
 

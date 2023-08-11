@@ -6,6 +6,10 @@ use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
+
+/**
+ * @template T of TransformerAbstract
+ */
 class FractalPresenter
 {
     protected Manager $manager;
@@ -26,6 +30,12 @@ class FractalPresenter
         return $this->manager;
     }
 
+    /**
+     * @template T
+     *
+     * @param  T  $transformer
+     * @return FractalPresenter<T>
+     */
     public static function from($transformer): static
     {
         return new FractalPresenter($transformer);
@@ -41,6 +51,9 @@ class FractalPresenter
         return $this->manager->createData(new Collection($collection, $this->transformer, 'list'))->toArray();
     }
 
+    /**
+     * @return T
+     */
     public function transformer()
     {
         return $this->transformer;
