@@ -60,8 +60,8 @@ class RequestCriteria extends AbstractCriteria
     public function getPaginate(): array
     {
         return [
-            $this->pagePrefix => $this->size,
-            $this->sizePrefix => $this->page,
+            $this->pagePrefix => $this->page,
+            $this->sizePrefix => $this->size,
             $this->totalPrefix => $this->total,
         ];
     }
