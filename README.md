@@ -154,8 +154,8 @@ $posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));  
 $posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     // WhereBetween('votes', [1, 100])
 $posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // WhereNotBetween('votes', [1, 100])
 $posts = $this->repository->pushCriteria(new WhereYear('created_at', '2023'));     // WhereYear('created_at', '=', date('Y')
-$posts = $this->repository->pushCriteria(new WhereMonth('created_at', '12'));     // WhereMonth('created_at', '=', date('Y-m')
-$posts = $this->repository->pushCriteria(new WhereDay('created_at', '2022-02-06'));     // WhereDay('created_at', '=', date('Y-m-d')
+$posts = $this->repository->pushCriteria(new WhereMonth('created_at', '12'));     // WhereMonth('created_at', '=', date('m')
+$posts = $this->repository->pushCriteria(new WhereDay('created_at', '06'));     // WhereDay('created_at', '=', date('d')
 $posts = $this->repository->pushCriteria(new WhereDate('created_at', '2022-02-06'));     // WhereDate('created_at', '=', date('Y-m-d')
 $posts = $this->repository->pushCriteria(new WhereDate('created_at', '<=', '2022-02-06'));     // > >= < <=
 $posts = $this->repository->pushCriteria(new WhereTime('created_at', '12:00:00'));     // WhereTime('created_at', '= ', date('H:i:s'))

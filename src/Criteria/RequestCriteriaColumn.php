@@ -9,6 +9,8 @@ use TimeShow\Repository\Criteria\Common\GreaterThanOrEqual;
 use TimeShow\Repository\Criteria\Common\LessThan;
 use TimeShow\Repository\Criteria\Common\LessThanOrEqual;
 use TimeShow\Repository\Criteria\Common\NotEqual;
+use TimeShow\Repository\Criteria\Common\WhereBetween;
+use TimeShow\Repository\Criteria\Common\WhereNotBetween;
 use TimeShow\Repository\Interfaces\CriteriaInterface;
 
 class RequestCriteriaColumn
@@ -101,6 +103,8 @@ class RequestCriteriaColumn
             '>' => new GreaterThan($this->field, $fieldVal),
             '>=' => new GreaterThanOrEqual($this->field, $fieldVal),
             'like' => new FieldLikeValue($this->field, $fieldVal),
+            'between' => new WhereBetween($this->field, $fieldVal),
+            'notBetween' => new WhereNotBetween($this->field, $fieldVal),
             'custom' => $this->criteria,
             default => new NullCriteria()
         };
