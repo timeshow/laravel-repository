@@ -229,6 +229,15 @@ $this->repository->deleteWhere([
 ])
 ```
 
+## Search
+can you use the search engine to search
+```php
+$criteria->column('xxx_id')->search();  // default search like
+$criteria->column('xxx_id')->search('between');
+$criteria->column('xxx_id')->search('=');
+$criteria->column('xxx_id')->search('whereIn');
+```
+
 ## Presenter
 can you prompt for creating a Transformer too if you haven't already.
 ```php
