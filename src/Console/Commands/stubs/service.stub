@@ -2,8 +2,9 @@
 namespace DummyNamespace;
 
 use Illuminate\Http\Request;
+use TimeShow\Repository\Services\BaseService;
 
-class DummyClass
+class DummyClass extends BaseService
 {
     protected $request;
 
