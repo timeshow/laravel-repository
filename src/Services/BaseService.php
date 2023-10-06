@@ -9,5 +9,5 @@ use TimeShow\Repository\Traits\ResponseTrait;
  */
 class BaseService
 {
-    use ApiResponseTrait;
+    use ResponseTrait;
 }

@@ -262,6 +262,12 @@ $presenter = FractalPresenter::from($this->transformer);
 ...$presenter->collection($data)
 ```
 
+You can use return ok/error in your services with BaseService instead of Exception
+```php
+return $this->ok('success', $data);
+return $this->error('error');
+```
+
 ## Thanks
 ---
 Thanks for the contributors (github.com)
