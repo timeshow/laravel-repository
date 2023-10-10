@@ -91,6 +91,8 @@ The only abstract method that must be provided is the `model` method (this is ju
     public function make(array $data);
 
     public function insert(array $data);
+    
+    public function insertGetId(array $data);
 
     public function create(array $data);
 
@@ -143,24 +145,42 @@ php artisan route:clear
 
 ## Getting results from Criteria
 ```php
-$posts = $this->repository->pushCriteria(new OrderBy('id', 'desc'));         
-$posts = $this->repository->pushCriteria(new FieldIsValue('name', 'value')); // =
-$posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // !=
-$posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // <
-$posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // <=
-$posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // >
-$posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // >=
-$posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));     // like
-$posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     // WhereBetween('votes', [1, 100])
-$posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // WhereNotBetween('votes', [1, 100])
-$posts = $this->repository->pushCriteria(new WhereYear('created_at', '2023'));     // WhereYear('created_at', '=', date('Y')
-$posts = $this->repository->pushCriteria(new WhereMonth('created_at', '12'));     // WhereMonth('created_at', '=', date('m')
-$posts = $this->repository->pushCriteria(new WhereDay('created_at', '06'));     // WhereDay('created_at', '=', date('d')
-$posts = $this->repository->pushCriteria(new WhereDate('created_at', '2022-02-06'));     // WhereDate('created_at', '=', date('Y-m-d')
+$posts = $this->repository->pushCriteria(new OrderBy('id', 'desc')); // orderBy 排序      
+$posts = $this->repository->pushCriteria(new FieldIsValue('name', 'value')); // FieldIsValue 相当于 = or where('name', 'value')
+$posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));     // FieldLikeValue 相当于 like 模糊查询 or where('name', 'like', '%'.$value.'%') or like('title','标题')
+$posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // NotEqual 相当于 !=
+$posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // LessThan 相当于 <
+$posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // LessThanOrEqual 相当于 <=
+$posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // GreaterThan 相当于 >
+$posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // GreaterThanOrEqual 相当于 >=
+$posts = $this->repository->pushCriteria(new WhereNull(['nickname', 'truename'])); // whereNull 验证字段值为空 or whereNull 相当于 is null or WhereNull('nickname')
+$posts = $this->repository->pushCriteria(new WhereNotNull('mobile')); // whereNotNull 验证字段不为空 or whereNotNull相当于is not null or WhereNotNull('mobile')
+$posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     //whereBetween(‘字段’,[范围区间]) 判断字段是否介于范围区间 or WhereBetween('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // whereNotBetween(‘字段’,[范围区间]) 判断字段不在两值之间 or WhereNotBetween('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereIn('votes', [1, 100])); // whereIn(‘字段’,[‘可选值’]) 判断字段是否在数组内 or WhereIn('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereNotIn('votes', [1, 100])); // whereNotIn(‘字段’,[‘可选值’]) 判断指定不在数组内 or WhereNotIn('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereYear('created_at', '2023'));     // whereYear(‘字段’,‘年’) 比较年 or WhereYear('created_at', '=', date('Y')
+$posts = $this->repository->pushCriteria(new WhereMonth('created_at', '12'));     // whereMonth(‘字段’,‘月份’) 比较字段月份 or WhereMonth('created_at', '=', date('m')
+$posts = $this->repository->pushCriteria(new WhereDay('created_at', '06'));     // whereDay(‘字段’,‘天’) 比较某一天 or WhereDay('created_at', '=', date('d')
+$posts = $this->repository->pushCriteria(new WhereDate('created_at', '2022-02-06'));     // whereDate(‘字段’,‘2019-9-9’) 比较字段的值和日期 or WhereDate('created_at', '=', date('Y-m-d')
 $posts = $this->repository->pushCriteria(new WhereDate('created_at', '<=', '2022-02-06'));     // > >= < <=
-$posts = $this->repository->pushCriteria(new WhereTime('created_at', '12:00:00'));     // WhereTime('created_at', '= ', date('H:i:s'))
+$posts = $this->repository->pushCriteria(new WhereTime('created_at', '12:00:00'));     // whereTime(‘字段’,’=’,‘时间’) 比较特定时间 or WhereTime('created_at', '= ', date('H:i:s'))
 $posts = $this->repository->pushCriteria(new WhereTime('created_at', ' <= ', '12:00:00'));     // > >= < <=    whereTime('created_at', '= ', date('H:i:s', strtotime('+1 hour')))
+$posts = $this->repository->pushCriteria(new whereColumn('created_at', 'updated_at'));     // whereColumn(‘字段1’,‘字段2’) 比较两个字段是否相等(默认=) or whereColumn 相当于 > >= = < <=   or whereColumn('class_id', '=', '5') or  whereColumn('updated_at', '>', 'created_at')
+$posts = $this->repository->pushCriteria(new whereColumn([['first_name', '=', 'last_name'], ['updated_at', '>', 'created_at']]));  //whereColumn 方法也可以传递一个包含多个条件的数组。这些条件将使用 and 运算符进行连接
 
+//原生表达式 SelectRaw / WhereRaw / OrWhereRaw / OrderByRaw / HavingRaw / OrHavingRaw
+$this->repository->pushCriteria(new SelectRaw('price * ? as price_with_tax', [1.0825]));  // 替代select(DB::raw(…))  select(DB::raw("($sql) as res")) or ->selectRaw('amount + ? as amount_with_bonus', [500])
+$this->repository->pushCriteria(new SelectRaw('user_id, sum(views) as total_views'));  // select(DB::raw('user_id, sum(views) as total_views')) or ->groupBy('user_id')->selectRaw('user_id, sum(views) as total_views')->get();
+$this->repository->pushCriteria(new WhereRaw('FIND_IN_SET(?, user_group)', '1'));  // where(DB::raw("FIND_IN_SET(3, user_group)")) or ->whereRaw('price > IF(state = "TX", ?, 100)', [200])
+$this->repository->pushCriteria(new whereRaw('vip_ID> ? and vip_fenshu >= ?',[2,300]));  //where(DB::raw('vip_ID> ? and vip_fenshu >= ?',[2,300]))->get();//多个条件  or ->whereExists(function ($query) {$query->select(DB::raw(1))->from('orders')->whereRaw('orders.user_id = users.id');})->get();
+$this->repository->pushCriteria(new OrWhereRaw('user_group IN (?)', [implode(',', [1, 2, 3, 4])]));  //where(DB::raw('user_group IN (?)', [implode(',', [1, 2, 3, 4])]'user_group IN (?)', [implode(',', [1, 2, 3, 4])]))->get();//多个条件
+$this->repository->pushCriteria(new OrderByRaw("FIELD(status, " . implode(", ", [1, 0, 2, 3]) . ")"));  //orderByRaw status字段按着1,0,2,3排序
+$this->repository->pushCriteria(new OrderByRaw("FIELD(user_type, 'admin', 'moderator', 'user')"));  // orderBy(DB::raw("FIELD(is_pay,2,0,1)")) or ->orderByRaw("FIELD(is_pay,2,0,1)")->orderByRaw("FIELD(status,1,2,6,7,3)")
+$this->repository->pushCriteria(new OrderByRaw('updated_at - created_at DESC'));  // ->orderBy(DB::raw('updated_at - created_at DESC')) or ->orderByRaw('(updated_at - created_at) desc')
+$this->repository->pushCriteria(new HavingRaw('COUNT(*) > 10'));  // having(DB::raw("COUNT(*) > 10")) or groupBy('product_id')->havingRaw('COUNT(*) > 1')->get()
+$this->repository->pushCriteria(new HavingRaw('SUM(price) > 2500'));  //having(DB::raw('SUM(price) > 2500')) or ->groupBy('department')->havingRaw('SUM(price) > 2500')->get();
+$this->repository->pushCriteria(new OrHavingRaw('bid>1'));  //having(DB::raw('bid>1')) or ->selectRaw('bname as title')->groupBy('bid')->orHavingRaw('bid>1')->get()
 
 
 ```

@@ -204,6 +204,14 @@ interface BaseRepositoryInterface
     public function insert(array $data): ?Model;
 
     /**
+     * Insert a new record and get the value of the primary key.
+     * 插入并返回ID
+     * @param array $data
+     * @return TModel|null
+     */
+    public function insertGetId(array $data): ?Model;
+
+    /**
      * Creates a model and returns it
      * 创建
      * @param array $data

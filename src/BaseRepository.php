@@ -446,6 +446,17 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Insert a new record and get the value of the primary key.
+     * 插入并返回ID
+     * @param  array $data
+     * @return Model|null
+     */
+    public function insertGetId(array $data): ?Model
+    {
+        return $this->makeModel(false)->insertGetId($data);
+    }
+
+    /**
      * Creates a model and returns it
      * 创建
      * @param  array $data
