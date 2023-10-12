@@ -47,7 +47,42 @@ interface BaseRepositoryInterface
      *
      * @return int
      */
-    public function count(): int;
+    public function count(string $columns = '*'): int;
+
+    /**
+     * Retrieve the minimum value of a given column
+     * @param  string  $column
+     * @return mixed
+     */
+    public function min(string $column): mixed;
+
+    /**
+     * Retrieve the maximum value of a given column
+     * @param  string  $column
+     * @return mixed
+     */
+    public function max(string $column): mixed;
+
+    /**
+     * Retrieve the sum of the values of a given column
+     * @param  string  $column
+     * @return mixed
+     */
+    public function sum(string $column): mixed;
+
+    /**
+     * Retrieve the average of the values of a given column
+     * @param  string  $column
+     * @return mixed
+     */
+    public function avg(string $column): mixed;
+
+    /**
+     * Alias for the "avg" method
+     * @param  string  $column
+     * @return mixed
+     */
+    public function average(string $column): mixed;
 
     /**
      * Returns first match
@@ -56,6 +91,15 @@ interface BaseRepositoryInterface
      * @return TModel|null
      */
     public function first(array $columns = ['*']): ?Model;
+
+    /**
+     * Returns a new first match
+     *
+     * @param array $columns
+     * @param string $sort
+     * @return TModel|null
+     */
+    public function firstLatest(array $columns = ['*'], string $sort=''): ?Model;
 
     /**
      * Returns first match or throws exception if not found
@@ -71,6 +115,12 @@ interface BaseRepositoryInterface
      * @return mixed
      */
     public function all(array $columns = ['*']): EloquentCollection;
+
+    /**
+     * @param array $columns
+     * @return mixed
+     */
+    public function get(array $columns = ['*']): EloquentCollection;
 
     /**
      * @param  string $value
@@ -124,6 +174,16 @@ interface BaseRepositoryInterface
      * @throws ModelNotFoundException
      */
     public function findOrFail(int|string $id, array $columns = ['*']): Model;
+
+    /**
+     * Find a model by its primary key or return fresh model instance
+     *
+     * @param  int|string $id
+     * @param  array      $columns
+     * @return TModel
+     * @throws ModelNotFoundException
+     */
+    public function findOrNew(int|string $id, array $columns = ['*']): Model;
 
     /**
      * @param string $attribute

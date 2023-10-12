@@ -162,12 +162,62 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Does a simple count(*) for the model / scope
-     *
+     * @param  string  $columns
      * @return int
      */
-    public function count(): int
+    public function count(string $columns = '*'): int
     {
         return $this->query()->count();
+    }
+
+    /**
+     * Retrieve the minimum value of a given column
+     * @param  string  $column
+     * @return float|int
+     */
+    public function min(string $column): mixed
+    {
+        return $this->query()->min($column);
+    }
+
+    /**
+     * Retrieve the maximum value of a given column
+     * @param  string  $column
+     * @return float|int
+     */
+    public function max(string $column): mixed
+    {
+        return $this->query()->max($column);
+    }
+
+    /**
+     * Retrieve the sum of the values of a given column
+     * @param  string  $column
+     * @return float|int
+     */
+    public function sum(string $column): mixed
+    {
+        return $this->query()->sum($column);
+    }
+
+    /**
+     * Retrieve the average of the values of a given column
+     * @param  string  $column
+     * @return float|int
+     */
+    public function avg(string $column): mixed
+    {
+        return $this->query()->avg($column);
+    }
+
+    /**
+     * Alias for the "avg" method
+     * @param  string  $column
+     * @return float|int
+     */
+    public function average(string $column): mixed
+    {
+        return $this->avg($column);
     }
 
     /**
@@ -179,6 +229,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function first(array $columns = ['*']): ?Model
     {
         return $this->query()->first($columns);
+    }
+
+    /**
+     * Returns a new first match
+     *
+     * @param  array $columns
+     * @param string $sort default 'created_at'
+     * @return Model|null
+     */
+    public function firstLatest(array $columns = ['*'], string $sort=''): ?Model
+    {
+        return $this->query()->latest($sort)->first($columns);
     }
 
     /**
@@ -204,6 +266,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function all(array $columns = ['*']): EloquentCollection
     {
         return $this->query()->get($columns);
+    }
+
+    /**
+     * @param  array $columns
+     * @return EloquentCollection<int, TModel>
+     */
+    public function get(array $columns = ['*']): EloquentCollection
+    {
+        return $this->all($columns);
     }
 
     /**
@@ -287,6 +358,23 @@ abstract class BaseRepository implements BaseRepositoryInterface
     public function findOrFail(int|string $id, array $columns = ['*']): Model
     {
         $result = $this->query()->find($id, $columns);
+
+        if (! empty($result)) return $result;
+
+        throw (new ModelNotFoundException)->setModel($this->model(), $id);
+    }
+
+    /**
+     * Find a model by its primary key or return fresh model instance
+     *
+     * @param int|string $id
+     * @param array      $columns
+     * @return Model
+     * @throws ModelNotFoundException
+     */
+    public function findOrNew(int|string $id, array $columns = ['*']): Model
+    {
+        $result = $this->query()->findOrNew($id, $columns);
 
         if (! empty($result)) return $result;
 
