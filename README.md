@@ -57,12 +57,28 @@ The only abstract method that must be provided is the `model` method (this is ju
 ```php
 
     public function count();
+    
+    public function min(string $column);
+    
+    public function max(string $column);
+    
+    public function sum(string $column);
+    
+    public function avg(string $column);
+    
+    public function average(string $column);
 
     public function first($columns = ['*']);
 
+    public function firstLatest(array $columns = ['*'], string $sort='created_at', $skip = 0)
+
+    public function firstOldest(array $columns = ['*'], string $sort='created_at', $skip = 0)
+
     public function firstOrFail($columns = ['*']);
 
-    public function all($columns = ['*']);
+    public function all(array $columns = ['*']);
+    
+    public function get(array $columns = ['*']);
 
     public function pluck($value, $key = null);
 
@@ -72,21 +88,23 @@ The only abstract method that must be provided is the `model` method (this is ju
     
     public function simplePaginate($perPage, $columns = ['*']);
 
-    public function find($id, $columns = ['*'], $attribute = null);
+    public function find(int|string $id, array $columns = ['*'], ?string $attribute = null);
 
-    public function findOrFail($id, $columns = ['*']);
+    public function findOrFail(int|string $id, array $columns = ['*']);
+    
+    public function findOrNew(int|string $id, array $columns = ['*']);
 
-    public function findBy($attribute, $value, $columns = ['*']);
+    public function findBy(string $attribute, mixed $value, array $columns = ['*']);
 
-    public function findAllBy($attribute, $value, $columns = ['*']);
+    public function findAllBy(string $attribute, mixed $value, array $columns = ['*']);
 
-    public function findWhere($where, $columns = ['*'], $or = false);
+    public function findWhere(array $where, array $columns = ['*'], bool $or = false);
 
-    public function findWhereIn($field, array $values, $columns = ['*']);
+    public function findWhereIn($field, array $values, array $columns = ['*']);
 
-    public function findWhereNotIn($field, array $values, $columns = ['*']);
+    public function findWhereNotIn($field, array $values, array $columns = ['*']);
 
-    public function findWhereBetween($field, array $values, $columns = ['*']);
+    public function findWhereBetween($field, array $values, array $columns = ['*']);
 
     public function make(array $data);
 
@@ -102,11 +120,11 @@ The only abstract method that must be provided is the `model` method (this is ju
 
     public function fill(array $data, $id, $attribute = null);
 
-    public function delete($id);
+    public function delete(array|int|string $ids);
 
-    public function increment($column, $amount = 1);
+    public function increment(string $column, float|int $amount = 1);
 
-    public function decrement($column, $amount = 1);
+    public function decrement(string $column, float|int $amount = 1);
 ```
 
 ### Make Repository

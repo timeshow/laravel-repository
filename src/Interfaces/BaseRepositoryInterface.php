@@ -47,7 +47,7 @@ interface BaseRepositoryInterface
      *
      * @return int
      */
-    public function count(string $columns = '*'): int;
+    public function count(): int;
 
     /**
      * Retrieve the minimum value of a given column
@@ -93,13 +93,24 @@ interface BaseRepositoryInterface
     public function first(array $columns = ['*']): ?Model;
 
     /**
-     * Returns a new first match
+     * Returns a new latest first match
      *
      * @param array $columns
      * @param string $sort
+     * @param string $skip
      * @return TModel|null
      */
-    public function firstLatest(array $columns = ['*'], string $sort=''): ?Model;
+    public function firstLatest(array $columns = ['*'], string $sort='created_at', $skip = 0): ?Model;
+
+    /**
+     * Returns a new oldest first match
+     *
+     * @param array $columns
+     * @param string $sort
+     * @param string $skip
+     * @return TModel|null
+     */
+    public function firstOldest(array $columns = ['*'], string $sort='created_at', $skip = 0): ?Model;
 
     /**
      * Returns first match or throws exception if not found

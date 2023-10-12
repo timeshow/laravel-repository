@@ -165,7 +165,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  string  $columns
      * @return int
      */
-    public function count(string $columns = '*'): int
+    public function count(): int
     {
         return $this->query()->count();
     }
@@ -232,15 +232,29 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Returns a new first match
+     * Returns a new latest first match
      *
      * @param  array $columns
      * @param string $sort default 'created_at'
+     * @param string $skip default 0
      * @return Model|null
      */
-    public function firstLatest(array $columns = ['*'], string $sort=''): ?Model
+    public function firstLatest(array $columns = ['*'], string $sort='created_at', $skip = 0): ?Model
     {
-        return $this->query()->latest($sort)->first($columns);
+        return $this->query()->latest($sort)->skip($skip)->first($columns);
+    }
+
+    /**
+     * Returns a new oldest first match
+     *
+     * @param  array $columns
+     * @param string $sort default 'created_at'
+     * @param string $skip default 0
+     * @return Model|null
+     */
+    public function firstOldest(array $columns = ['*'], string $sort='created_at', $skip = 0): ?Model
+    {
+        return $this->query()->oldest($sort)->skip($skip)->first($columns);
     }
 
     /**
