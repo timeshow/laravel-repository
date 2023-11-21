@@ -3,11 +3,12 @@
 
 ## Version Compatibility
 
-| Laravel  | Package      |
-|:---------|:-------------|
-| 7.0      | 0.1.0        |
-| 8.0      | 1.0.0        |
-| 9.0,10.0 | last version |
+| Laravel | Package      |
+|:--------|:-------------|
+| 7.0     | 0.1.0        |
+| 8.0     | 1.0.0        |
+| 9.0     | 2.6.0        |
+| 10.0    | last version |
 
 ## Install
 Via Composer
