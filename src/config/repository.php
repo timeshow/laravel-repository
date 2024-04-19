@@ -12,8 +12,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'pagination' => [
-        'pagePrefix' => 'page',
-        'sizePrefix' => 'size',
+        'pagePrefix' => 'pageIndex',
+        'sizePrefix' => 'pageSize',
         'totalPrefix' => 'total',
         'limit' => 15,
         'pageMax' => 500,
@@ -21,7 +21,7 @@ return [
 
     'field' => [
         'orderPrefix' => 'o_',
-        'searchPrefix' => 'f_',
+        'searchPrefix' => 's_',
     ],
 
     /*
