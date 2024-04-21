@@ -12,16 +12,16 @@ return [
     |--------------------------------------------------------------------------
     */
     'pagination' => [
-        'pagePrefix' => 'pageIndex',
-        'sizePrefix' => 'pageSize',
+        'pagePrefix' => 'pageIndex',  //page
+        'sizePrefix' => 'pageSize',   //size
         'totalPrefix' => 'total',
-        'limit' => 15,
+        'limit' => 10,
         'pageMax' => 500,
     ],
 
     'field' => [
-        'orderPrefix' => 'o_',
-        'searchPrefix' => 's_',
+        'orderPrefix' => '',   //o_
+        'searchPrefix' => '',  //s_
     ],
 
     /*
