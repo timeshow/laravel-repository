@@ -131,6 +131,12 @@ interface BaseRepositoryInterface
      * @param array $columns
      * @return mixed
      */
+    public function tree(array $columns = ['*']): EloquentCollection;
+
+    /**
+     * @param array $columns
+     * @return mixed
+     */
     public function get(array $columns = ['*']): EloquentCollection;
 
     /**

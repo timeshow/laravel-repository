@@ -286,6 +286,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  array $columns
      * @return EloquentCollection<int, TModel>
      */
+    public function tree(array $columns = ['*']): EloquentCollection
+    {
+        return $this->query()->get($columns);
+    }
+
+    /**
+     * @param  array $columns
+     * @return EloquentCollection<int, TModel>
+     */
     public function get(array $columns = ['*']): EloquentCollection
     {
         return $this->all($columns);
