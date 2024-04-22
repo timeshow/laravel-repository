@@ -20,8 +20,8 @@ return [
     ],
 
     'field' => [
-        'orderPrefix' => '',   //o_
-        'searchPrefix' => '',  //s_
+        'orderPrefix' => '',   //o_ order
+        'searchPrefix' => '',  //s_ search
     ],
 
     /*
