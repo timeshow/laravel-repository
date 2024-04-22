@@ -286,9 +286,37 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param  array $columns
      * @return EloquentCollection<int, TModel>
      */
-    public function tree(array $columns = ['*']): EloquentCollection
+    public function tree(array $columns = ['*'],$parent_id='parent_id',$id='id',$children='children'): EloquentCollection
     {
-        return $this->query()->get($columns);
+        $createTree = function ($items,$parent_id='parent_id',$id='id',$children='children')
+        {
+            foreach ($items as &$item) {
+                $item_id = $item->$id == '' ? 0 : $item->$id ;
+                $item_parent_id = $item->$parent_id == '' ? 0 : $item->$parent_id ;
+
+                if(!isset($item->$children)){
+                    $item->$children = new EloquentCollection();
+                }
+
+                if(!isset($items[$item_parent_id])){
+                    $items[$item_parent_id] = new EloquentCollection();
+                }
+                $parent_item = &$items[$item_parent_id];
+
+                if(!isset($parent_item->$children)){
+                    $parent_item->$children = new EloquentCollection();
+                }
+
+                $children_tmp = $parent_item->$children;
+                $children_tmp[] = $item;
+                $parent_item->$children = $children_tmp;
+            }
+
+            if(isset($items[0])) return $items[0]->$children ?? new EloquentCollection();
+            return new EloquentCollection();
+        };
+
+        return $createTree($this->query()->get($columns)->keyBy($id),$parent_id,$id,$children);
     }
 
     /**

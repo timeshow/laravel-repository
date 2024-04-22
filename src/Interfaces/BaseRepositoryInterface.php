@@ -131,7 +131,7 @@ interface BaseRepositoryInterface
      * @param array $columns
      * @return mixed
      */
-    public function tree(array $columns = ['*']): EloquentCollection;
+    public function tree(array $columns = ['*'],$parent_id='parent_id',$id='id',$children='children'): EloquentCollection;
 
     /**
      * @param array $columns
