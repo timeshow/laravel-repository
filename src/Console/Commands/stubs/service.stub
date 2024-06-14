@@ -6,13 +6,11 @@ use TimeShow\Repository\Services\BaseService;
 
 class DummyClass extends BaseService
 {
-    protected $request;
 
     /**
      * 构建函数
      */
-    public function __construct(Request $request){
-        $this->request = $request;
+    public function __construct(Protected Request $request){
     }
 
 }
