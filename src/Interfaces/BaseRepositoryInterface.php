@@ -276,9 +276,9 @@ interface BaseRepositoryInterface
      * Insert a model and returns it
      * 插入
      * @param array $data
-     * @return TModel|null
+     * @return bool
      */
-    public function insert(array $data): ?Model;
+    public function insert(array $data) : bool;
 
     /**
      * Insert a new record and get the value of the primary key.

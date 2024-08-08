@@ -577,9 +577,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * Creates a model and returns it
      * 插入
      * @param  array $data
-     * @return Model|null
+     * @return bool
      */
-    public function insert(array $data): ?Model
+    public function insert(array $data) : bool
     {
         return $this->makeModel(false)->insert($data);
     }
