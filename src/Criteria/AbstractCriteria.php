@@ -23,6 +23,26 @@ abstract class AbstractCriteria implements CriteriaInterface
      */
     protected BaseRepositoryInterface $repository;
 
+    public function __construct(protected array $criteriaList = [])
+    {
+    }
+
+    public function when(bool $condition, CriteriaInterface $criteria): static
+    {
+        if ($condition) {
+            return $this->push($criteria);
+        }
+        return $this;
+    }
+
+    public function push(CriteriaInterface $criteria): static
+    {
+        if (!$criteria instanceof NullCriteria) {
+            $this->criteriaList[] = $criteria;
+        }
+        return $this;
+    }
+
     /**
      * @param TModel|Relation<TRelated>|DatabaseBuilder|EloquentBuilder<TModel> $model
      * @param BaseRepositoryInterface<TModel>                                   $repository
