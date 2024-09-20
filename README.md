@@ -307,10 +307,40 @@ return $this->ok('success', $data);
 return $this->error('error');
 ```
 
+You can use TimeHelper in your code
+```php
+TimeHelper::getTodayStartTime()
+TimeHelper::getTomorrowStartTime()
+TimeHelper::getYesterdayStartTime()
+TimeHelper::getYearStartTime()
+TimeHelper::getSubYearStartTime(int $year = 1)
+TimeHelper::getCurrentDate()
+TimeHelper::getCurrentMonthRange()
+TimeHelper::getCurrentTime($time = null)
+TimeHelper::getCurrentTimestamp()
+TimeHelper::convertTime(int $time = 0) 
+TimeHelper::convertTimestamp(int $timestamp = 0)
+TimeHelper::getToday()
+TimeHelper::getTodayRange()
+TimeHelper::getYesterday()
+TimeHelper::getYesterdayRange()
+TimeHelper::getMonth()
+TimeHelper::getMonthRange()
+TimeHelper::getCurrentWeek() 
+TimeHelper::getCurrentWeekRange()
+TimeHelper::getSubDay(int $day = 7)
+TimeHelper::getSubDayRange(int $day = 7)
+TimeHelper::getCurrentSubDay(int $day = 7)
+TimeHelper::getCurrentSubDayRange(int $day = 7) 
+TimeHelper::getSubYear(int $year = 1) 
+TimeHelper::getSubYearRange(int $year = 1)
+```
+
 ## Thanks
 ---
 Thanks for the contributors (github.com)
 ```bash
 Wyj
 Harry
+Jijacky
 ```
