@@ -8,6 +8,8 @@ class TimeHelper
     /**
      * get today's start time
      * @return string
+     *
+     * @example 2024-09-23 00:00:00
      */
     public static function getTodayStartTime() : string
     {
@@ -17,6 +19,8 @@ class TimeHelper
     /**
      * get tomorrow's start time
      * @return string
+     *
+     * @example
      */
     public static function getTomorrowStartTime() : string
     {
@@ -26,6 +30,8 @@ class TimeHelper
     /**
      * get yesterday's start time
      * @return string
+     *
+     * @example
      */
     public static function getYesterdayStartTime() : string
     {
@@ -35,6 +41,8 @@ class TimeHelper
     /**
      * get the start time of this year
      * @return string
+     *
+     * @example
      */
     public static function getYearStartTime() : string
     {
@@ -45,6 +53,8 @@ class TimeHelper
      * obtain the start time of previous years
      * @param int $year
      * @return string
+     *
+     * @example
      */
     public static function getSubYearStartTime(int $year = 1) : string
     {
@@ -54,6 +64,8 @@ class TimeHelper
     /**
      * get the current date
      * @return string
+     *
+     * @example
      */
     public static function getCurrentDate() : string
     {
@@ -63,8 +75,10 @@ class TimeHelper
     /**
      * obtain the date range for the current month
      * @return array
+     *
+     * @example
      */
-    public static function getCurrentMonthRange() : array
+    public static function getCurrentMonthDateRange() : array
     {
         $time = time();
         $start_time = date('Y-m-01', $time);
@@ -80,6 +94,24 @@ class TimeHelper
      * format time
      * @param null $time
      * @return string
+     *
+     * @example
+     */
+    public static function getStringTime($time = null) : string
+    {
+        if ($time){
+            return date('YmdHis', $time);
+        }else{
+            return Carbon::now()->format('YmdHis');
+        }
+    }
+
+    /**
+     * format time
+     * @param null $time
+     * @return string
+     *
+     * @example
      */
     public static function getCurrentTime($time = null) : string
     {
@@ -93,6 +125,8 @@ class TimeHelper
     /**
      * get timestamp 13 digit
      * @return float|int
+     *
+     * @example
      */
     public static function getCurrentTimestamp() : float|int
     {
@@ -103,6 +137,8 @@ class TimeHelper
      * timestamp conversion
      * @param int $time
      * @return string
+     *
+     * @example
      */
     public static function convertTime(int $time = 0) : string
     {
@@ -113,6 +149,8 @@ class TimeHelper
      * timestamp conversion
      * @param int $timestamp
      * @return string
+     *
+     * @example
      */
     public static function convertTimestamp(int $timestamp = 0) : string
     {
@@ -122,6 +160,8 @@ class TimeHelper
     /**
      * obtain the time interval for the current day
      * @return float[]|int[]
+     *
+     * @example
      */
     public static function getToday() : array
     {
@@ -140,6 +180,8 @@ class TimeHelper
     /**
      * obtain the time interval of the day
      * @return array
+     *
+     * @example
      */
     public static function getTodayRange() : array
     {
@@ -156,6 +198,8 @@ class TimeHelper
     /**
      * obtain timestamps for yesterday's start and end times
      * @return float[]|int[]
+     *
+     * @example
      */
     public static function getYesterday() : array
     {
@@ -177,6 +221,8 @@ class TimeHelper
     /**
      * obtain the time interval of the yesterday
      * @return array
+     *
+     * @example
      */
     public static function getYesterdayRange() : array
     {
@@ -200,8 +246,10 @@ class TimeHelper
     /**
      * get the timestamp of the start and end time of the current month
      * @return float[]|int[]
+     *
+     * @example
      */
-    public static function getMonth() : array
+    public static function getCurrentMonth() : array
     {
         // get current date
         $currentDate = Carbon::now();
@@ -222,17 +270,19 @@ class TimeHelper
     /**
      * get the time interval of the current month
      * @return array
+     *
+     * @example
      */
-    public static function getMonthRange() : array
+    public static function getCurrentMonthRange() : array
     {
         // get current date
         $currentDate = Carbon::now();
 
         // get the start timestamp of this month
-        $month_start_timestamp = $currentDate->startOfMonth()->startOfDay()->timestamp;
+        $month_start_timestamp = $currentDate->startOfMonth()->startOfDay();
 
         // get the end timestamp of this month
-        $month_end_timestamp = $currentDate->endOfMonth()->endOfDay()->timestamp;
+        $month_end_timestamp = $currentDate->endOfMonth()->endOfDay();
 
         $start_time = date('Y-m-d H:i:s', $month_start_timestamp);
         $end_time = date('Y-m-d H:i:s', $month_end_timestamp);
@@ -243,8 +293,52 @@ class TimeHelper
     }
 
     /**
+     * get the timestamp of the start and end time of the current month
+     * @return float[]|int[]
+     *
+     * @example
+     */
+    public static function getLastMonth() : array
+    {
+        // get current date
+        $currentDate = Carbon::now();
+
+        $month_start_timestamp = $currentDate->subMonth()->firstOfMonth()->timestamp;
+        $month_end_timestamp = $currentDate->subMonth()->lastOfMonth()->timestamp;
+
+        return [
+            'start_timestamp' => $month_start_timestamp,
+            'end_timestamp' => $month_end_timestamp
+        ];
+    }
+
+    /**
+     * get the time interval of the current month
+     * @return array
+     *
+     * @example
+     */
+    public static function getLastMonthRange() : array
+    {
+        // get current date
+        $currentDate = Carbon::now();
+
+        $month_start_time = $currentDate->subMonth()->firstOfMonth();
+        $month_end_times = $currentDate->subMonth()->lastOfMonth();
+
+        $start_time = date('Y-m-d H:i:s', $month_start_time);
+        $end_time = date('Y-m-d H:i:s', $month_end_times);
+        return [
+            'start_time' => $start_time,
+            'end_time' => $end_time
+        ];
+    }
+
+    /**
      * get the timestamp of the current week's date
      * @return array
+     *
+     * @example
      */
     public static function getCurrentWeek() : array
     {
@@ -260,6 +354,8 @@ class TimeHelper
     /**
      * get the date range for the current week
      * @return array
+     *
+     * @example
      */
     public static function getCurrentWeekRange() : array
     {
@@ -273,9 +369,43 @@ class TimeHelper
     }
 
     /**
+     * get the timestamp of last week
+     * @return array
+     *
+     * @example
+     */
+    public static function getLastWeek() : array
+    {
+        $lastWeek = self::getSubDay(7);
+
+        return [
+            'start_timestamp' => $lastWeek['start_timestamp'],
+            'end_timestamp' => $lastWeek['end_timestamp'],
+        ];
+    }
+
+    /**
+     * get the time range of last week
+     * @return array
+     *
+     * @example
+     */
+    public static function getLastWeekRange() : array
+    {
+        $lastWeek = self::getSubDayRange(7);
+
+        return [
+            'start_time' => $lastWeek['start_time'],
+            'end_time' => $lastWeek['end_time'],
+        ];
+    }
+
+    /**
      * get the timestamp of the previous few days
      * @param int $day
      * @return array
+     *
+     * @example
      */
     public static function getSubDay(int $day = 7) : array
     {
@@ -289,9 +419,11 @@ class TimeHelper
     }
 
     /**
-     * get the date range of the previous few days
+     * get the time range of the previous few days
      * @param int $day
      * @return array
+     *
+     * @example
      */
     public static function getSubDayRange(int $day = 7) : array
     {
@@ -308,6 +440,8 @@ class TimeHelper
      * get the timestamp of the current day's time
      * @param int $day
      * @return array
+     *
+     * @example
      */
     public static function getCurrentSubDay(int $day = 7) : array
     {
@@ -324,6 +458,8 @@ class TimeHelper
      * get the date range of the current time in a few days
      * @param int $day
      * @return array
+     *
+     * @example
      */
     public static function getCurrentSubDayRange(int $day = 7) : array
     {
@@ -340,6 +476,8 @@ class TimeHelper
      * retrieve timestamps of dates from previous years
      * @param int $year
      * @return array
+     *
+     * @example
      */
     public static function getSubYear(int $year = 1) : array
     {
@@ -356,6 +494,8 @@ class TimeHelper
      * obtain the date range of previous years
      * @param int $year
      * @return array
+     *
+     * @example
      */
     public static function getSubYearRange(int $year = 1) : array
     {
@@ -366,6 +506,54 @@ class TimeHelper
             'start_time' => $start_time,
             'end_time' => $end_time
         ];
+    }
+
+    /**
+     * Return the number of seconds in a minute
+     * @param int $minutes
+     * @return int
+     *
+     * @example 60
+     */
+    public static function secondOfMinute(int $minutes = 1): int
+    {
+        return 60 * $minutes;
+    }
+
+    /**
+     * Return the number of seconds in hour
+     * @param int $hours
+     * @return int
+     *
+     * @example 3600
+     */
+    public static function secondOfHour(int $hours = 1): int
+    {
+        return 3600 * $hours;
+    }
+
+    /**
+     * Return the number of seconds in a day
+     * @param int $days
+     * @return int
+     *
+     * @example 86400
+     */
+    public static function secondOfDay(int $days = 1): int
+    {
+        return 86400 * $days;
+    }
+
+    /**
+     * Return the number of seconds in a week
+     * @param int $weeks
+     * @return int
+     *
+     * @example 604800
+     */
+    public static function secondOfWeek(int $weeks = 1): int
+    {
+        return 604800 * $weeks;
     }
 
 }
