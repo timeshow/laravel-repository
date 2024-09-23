@@ -8,7 +8,7 @@ class TimeHelper
 
     /**
      * Determine whether it is a leap year
-     * @param int $year
+     * @param int|null $year
      * @return bool
      */
     public static function isLeapYear(int $year = null) : bool
@@ -209,7 +209,6 @@ class TimeHelper
 
     /**
      * format time
-     * @param null $time
      * @return string
      *
      * @example 2024-01-01 00:00:00
@@ -238,7 +237,7 @@ class TimeHelper
      */
     public static function getCurrentMillisecond() : float|int
     {
-        return intval(Carbon::now()->getPreciseTimestamp() / 1000);
+        return (int) (Carbon::now()->getPreciseTimestamp() / 1000);
     }
 
     /**
@@ -459,6 +458,7 @@ class TimeHelper
 
     /**
      * get the timestamp of the start and end time of the few month
+     * @param int $month
      * @return float[]|int[]
      *
      * @example [start_timestamp: 1722441600, end_timestamp: 1725033600]
@@ -476,6 +476,7 @@ class TimeHelper
 
     /**
      * get the time interval of the few month
+     * @param int $month
      * @return array
      *
      * @example [start_time: "2024-08-01 00:00:00", end_time: "2024-08-31 00:00:00"]
@@ -493,6 +494,7 @@ class TimeHelper
 
     /**
      * get the timestamp of the start and end time of the future month
+     * @param int $month
      * @return float[]|int[]
      *
      * @example [start_timestamp: 1722441600, end_timestamp: 1725033600]
@@ -510,6 +512,7 @@ class TimeHelper
 
     /**
      * get the time interval of the future month
+     * @param int $month
      * @return array
      *
      * @example [start_time: "2024-08-01 00:00:00", end_time: "2024-08-31 00:00:00"]
@@ -890,7 +893,7 @@ class TimeHelper
     /**
      * retrieve timestamps of dates from previous hours and minutes
      * @param int $hour
-     * @param int $minutes
+     * @param int $minute
      * @return int
      *
      * @example 1704038399
@@ -903,7 +906,7 @@ class TimeHelper
     /**
      * obtain the date time of previous hours and minutes
      * @param int $hour
-     * @param int $minutes
+     * @param int $minute
      * @return string
      *
      * @example "2023-12-31 23:59:59"
@@ -916,7 +919,7 @@ class TimeHelper
     /**
      * retrieve timestamps of dates from future hours and minutes
      * @param int $hour
-     * @param int $minutes
+     * @param int $minute
      * @return int
      *
      * @example 1704038399
@@ -929,7 +932,7 @@ class TimeHelper
     /**
      * obtain the date range of future hours and minutes
      * @param int $hour
-     * @param int $minutes
+     * @param int $minute
      * @return string
      *
      * @example "2023-12-31 23:59:59"
