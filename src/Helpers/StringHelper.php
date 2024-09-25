@@ -270,6 +270,119 @@ class StringHelper
     }
 
     /**
+     * Generate a random number of specified length
+     * @param int $length
+     * @return int
+     */
+    public static function generateRandomNumber(int $length = 6) : int
+    {
+        $min = pow(10, $length-1);
+        $max = pow(10, $length) -1;
+        return mt_rand($min, $max);
+    }
+
+    /**
+     * Generate a random number of specified length
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomNumberString(int $length = 10) : string
+    {
+        $characters = '0123456789';
+
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+    /**
+     * Generate a random letter of specified length
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomLetter(int $length = 10, string $type = '') : string
+    {
+        if ($type == 'lower'){
+            $characters = 'abcdefghijklmnopqrstuvwxyz';
+        }elseif($type == 'upper'){
+            $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }else{
+            $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }
+
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+    /**
+     * Generate a random letter of specified length
+     * @param int $length
+     * @return string
+     */
+    public static function generateRandomNumberLetter(int $length = 10, string $type = '') : string
+    {
+        if ($type == 'lower'){
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        }elseif($type == 'upper'){
+            $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }else{
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }
+
+        $charactersLength = strlen($characters);
+        $randomString = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $randomString;
+    }
+
+    /**
+     * Generate a password string
+     * @param int $lenght
+     * @param $digitsType
+     * @param $lowercaseType
+     * @param $uppercaseType
+     * @param $specialType
+     * @param $excludeType
+     * @return string
+     */
+    public static function getPasswordString(int $lenght = 16, $digitsType = true, $lowercaseType = true, $uppercaseType = true, $specialType = false, $excludeType = true) : string
+    {
+        $digits = array_flip(range('0', '9'));
+        $lowercase = array_flip(range('a', 'z'));
+        $uppercase = array_flip(range('A', 'Z'));
+        $special = array_flip(str_split('!@#$%^&*()_+=-}{[}]\|;:<>?/'));
+
+        if ($excludeType){
+            $exclude = array_flip(str_split('OoIl|'));
+            $lowercase = array_diff_key($lowercase, $exclude);
+            $uppercase = array_diff_key($uppercase, $exclude);
+            $special = array_diff_key($special, $exclude);
+        }
+
+        //$combined  = array_merge($digits, $lowercase, $uppercase, $special);
+        $combined = array_merge($digitsType?$digits:[], $lowercaseType?$lowercase:[], $uppercaseType?$uppercase:[], $specialType?$special:[]);
+
+        //return $combined;
+        $password  = str_shuffle(implode(array_rand($combined, $lenght)));
+        return $password;
+    }
+
+    /**
      * Format string as camel hump naming
      * @param string $string
      * @return string
