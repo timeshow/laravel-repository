@@ -289,17 +289,17 @@ class ArrayHelper
     }
 
     /**
-     * Use the '.' symbol to set values from multidimensional arrays or objects based on specified keys
+     *
      * @param $array
      * @param $key
      * @param $default
-     * @param bool $overwrite
+     * @param $overwrite
      * @return array
      *
      * @example ['products' => ['desk' => ['price' => 100]]]
      * @result data_set($data, 'products.desk.price', 200, $overwrite = false) => ['products' => ['desk' => ['price' => 100]]]
      */
-    public static function data_set($array, $key, $default = null, bool $overwrite = false) : array
+    public static function data_set($array, $key, $default = null, $overwrite = false) : array
     {
         return data_set($array, $key, $default, $overwrite);
     }
