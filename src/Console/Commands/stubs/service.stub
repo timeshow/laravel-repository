@@ -10,7 +10,7 @@ class DummyClass extends BaseService
     /**
      * 构建函数
      */
-    public function __construct(Protected Request $request){
+    public function __construct(protected Request $request){
     }
 
 }
