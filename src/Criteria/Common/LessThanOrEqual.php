@@ -30,6 +30,6 @@ class LessThanOrEqual extends AbstractCriteria
      */
     public function applyToQuery(Model|Relation|DatabaseBuilder|EloquentBuilder $model): Model|Relation|DatabaseBuilder|EloquentBuilder
     {
-        return $model->where($this->field, '=<', $this->value);
+        return $model->where($this->field, '<=', $this->value);
     }
 }

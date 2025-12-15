@@ -56,75 +56,40 @@ Simply extend the (abstract) repository class of your choice, either `TimeShow\R
 The only abstract method that must be provided is the `model` method (this is just like the way Bosnadev's repositories are used).
 
 ```php
-
     public function count();
-    
     public function min(string $column);
-    
     public function max(string $column);
-    
     public function sum(string $column);
-    
     public function avg(string $column);
-    
     public function average(string $column);
-
     public function first($columns = ['*']);
-
     public function firstLatest(array $columns = ['*'], string $sort='created_at', $skip = 0)
-
     public function firstOldest(array $columns = ['*'], string $sort='created_at', $skip = 0)
-
     public function firstOrFail($columns = ['*']);
-
-    public function all(array $columns = ['*']);
-    
+    public function all(array $columns = ['*']);  
     public function get(array $columns = ['*']);
-
     public function pluck($value, $key = null);
-
     public function lists($value, $key = null);
-
-    public function paginate($perPage, $columns = ['*'], $pageName = 'page', $page = null);
-    
+    public function paginate($perPage, $columns = ['*'], $pageName = 'page', $page = null);   
     public function simplePaginate($perPage, $columns = ['*']);
-
     public function find(int|string $id, array $columns = ['*'], ?string $attribute = null);
-
-    public function findOrFail(int|string $id, array $columns = ['*']);
-    
+    public function findOrFail(int|string $id, array $columns = ['*']);   
     public function findOrNew(int|string $id, array $columns = ['*']);
-
     public function findBy(string $attribute, mixed $value, array $columns = ['*']);
-
     public function findAllBy(string $attribute, mixed $value, array $columns = ['*']);
-
     public function findWhere(array $where, array $columns = ['*'], bool $or = false);
-
     public function findWhereIn($field, array $values, array $columns = ['*']);
-
     public function findWhereNotIn($field, array $values, array $columns = ['*']);
-
     public function findWhereBetween($field, array $values, array $columns = ['*']);
-
     public function make(array $data);
-
-    public function insert(array $data);
-    
+    public function insert(array $data);   
     public function insertGetId(array $data);
-
     public function create(array $data);
-
     public function save(array $data);
-
     public function update(array $data, $id, $attribute = null);
-
     public function fill(array $data, $id, $attribute = null);
-
     public function delete(array|int|string $ids);
-
     public function increment(string $column, float|int $amount = 1);
-
     public function decrement(string $column, float|int $amount = 1);
 ```
 
@@ -141,7 +106,7 @@ php artisan make:repository Test/TestRepository
 
 The `make:service` command automatically creates a new service object class.
 
-```php
+```bash
 php artisan make:service Test/TestService
 ```
 
@@ -149,14 +114,14 @@ php artisan make:service Test/TestService
 
 The `make:transformer` command automatically creates a new transformer array class.
 
-``` bash
+```php
 php artisan make:transformer Test/TestTransformer
 ```
 
 
 ## Q&A
 question1: Unable to locate publishable resources.
-``` bash
+```php
 php artisan cache:clear
 php artisan config:clear
 php artisan route:clear
@@ -164,24 +129,26 @@ php artisan route:clear
 
 ## Getting results from Criteria
 ```php
-$posts = $this->repository->pushCriteria(new OrderBy('id', 'desc')); // orderBy 排序      
+$posts = $this->repository->pushCriteria(new OrderBy('id', 'desc')); // orderBy 排序
+$posts = $this->repository->pushCriteria(new Take(5)); // 调取5条
 $posts = $this->repository->pushCriteria(new FieldIsValue('name', 'value')); // FieldIsValue 相当于 = or where('name', 'value')
-$posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));     // FieldLikeValue 相当于 like 模糊查询 or where('name', 'like', '%'.$value.'%') or like('title','标题')
+$posts = $this->repository->pushCriteria(new FieldLikeValue('name', 'value'));     // FieldLikeValue 相当于 like 模糊查询 where('name', 'like', '%'.$value.'%') or like('title','标题')
+$posts = $this->repository->pushCriteria(new FieldOrLikeValue('name', 'value'));     // FieldOrLikeValue 相当于 like 模糊查询 or where('name', 'like', '%'.$value.'%') or like('title','标题')
+$posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // GreaterThan 相当于 >
+$posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // GreaterThanOrEqual 相当于 >=
 $posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // NotEqual 相当于 !=
 $posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // LessThan 相当于 <
 $posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // LessThanOrEqual 相当于 <=
-$posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // GreaterThan 相当于 >
-$posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // GreaterThanOrEqual 相当于 >=
 $posts = $this->repository->pushCriteria(new WhereNull(['nickname', 'truename'])); // whereNull 验证字段值为空 or whereNull 相当于 is null or WhereNull('nickname')
 $posts = $this->repository->pushCriteria(new WhereNotNull('mobile')); // whereNotNull 验证字段不为空 or whereNotNull相当于is not null or WhereNotNull('mobile')
-$posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     //whereBetween(‘字段’,[范围区间]) 判断字段是否介于范围区间 or WhereBetween('votes', [1, 100])
-$posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // whereNotBetween(‘字段’,[范围区间]) 判断字段不在两值之间 or WhereNotBetween('votes', [1, 100])
-$posts = $this->repository->pushCriteria(new WhereIn('votes', [1, 100])); // whereIn(‘字段’,[‘可选值’]) 判断字段是否在数组内 or WhereIn('votes', [1, 100])
-$posts = $this->repository->pushCriteria(new WhereNotIn('votes', [1, 100])); // whereNotIn(‘字段’,[‘可选值’]) 判断指定不在数组内 or WhereNotIn('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     //whereBetween(‘字段’,[范围区间]) 判断字段是否介于1~100范围区间 or WhereBetween('votes', [1, 100]) or WhereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+$posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // whereNotBetween(‘字段’,[范围区间]) 判断字段不在1~100范围区间 or WhereNotBetween('votes', [1, 100])
+$posts = $this->repository->pushCriteria(new WhereIn('votes', [1, 2, 3, 4, 5, 100])); // whereIn(‘字段’,[‘可选值’]) 判断字段是否在数组内 or WhereIn('votes', [1, 2, 3, 4, 5, 100])
+$posts = $this->repository->pushCriteria(new WhereNotIn('votes', [1, 2, 3, 4, 5, 100])); // whereNotIn(‘字段’,[‘可选值’]) 判断指定不在数组内 or WhereNotIn('votes', [1, 2, 3, 4, 5, 100])
 $posts = $this->repository->pushCriteria(new WhereYear('created_at', '2023'));     // whereYear(‘字段’,‘年’) 比较年 or WhereYear('created_at', '=', date('Y')
 $posts = $this->repository->pushCriteria(new WhereMonth('created_at', '12'));     // whereMonth(‘字段’,‘月份’) 比较字段月份 or WhereMonth('created_at', '=', date('m')
 $posts = $this->repository->pushCriteria(new WhereDay('created_at', '06'));     // whereDay(‘字段’,‘天’) 比较某一天 or WhereDay('created_at', '=', date('d')
-$posts = $this->repository->pushCriteria(new WhereDate('created_at', '2022-02-06'));     // whereDate(‘字段’,‘2019-9-9’) 比较字段的值和日期 or WhereDate('created_at', '=', date('Y-m-d')
+$posts = $this->repository->pushCriteria(new WhereDate('created_at', '2022-02-06'));    // whereDate(‘字段’,‘2019-9-9’) 比较字段的值和日期 or WhereDate('created_at', '=', date('Y-m-d')
 $posts = $this->repository->pushCriteria(new WhereDate('created_at', '<=', '2022-02-06'));     // > >= < <=
 $posts = $this->repository->pushCriteria(new WhereTime('created_at', '12:00:00'));     // whereTime(‘字段’,’=’,‘时间’) 比较特定时间 or WhereTime('created_at', '= ', date('H:i:s'))
 $posts = $this->repository->pushCriteria(new WhereTime('created_at', ' <= ', '12:00:00'));     // > >= < <=    whereTime('created_at', '= ', date('H:i:s', strtotime('+1 hour')))
