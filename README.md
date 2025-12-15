@@ -137,6 +137,7 @@ $posts = $this->repository->pushCriteria(new FieldOrLikeValue('name', 'value'));
 $posts = $this->repository->pushCriteria(new GreaterThan('name', 'value'));     // GreaterThan 相当于 >
 $posts = $this->repository->pushCriteria(new GreaterThanOrEqual('name', 'value')); // GreaterThanOrEqual 相当于 >=
 $posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // NotEqual 相当于 !=
+$posts = $this->repository->pushCriteria(new IsActive('is_active'));     // IsActive 判断字段值是否为 true
 $posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // LessThan 相当于 <
 $posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // LessThanOrEqual 相当于 <=
 $posts = $this->repository->pushCriteria(new WhereNull(['nickname', 'truename'])); // whereNull 验证字段值为空 or whereNull 相当于 is null or WhereNull('nickname')
