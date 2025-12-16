@@ -140,7 +140,7 @@ $posts = $this->repository->pushCriteria(new NotEqual('name', 'value'));     // 
 $posts = $this->repository->pushCriteria(new IsActive('is_active'));     // IsActive 判断字段值是否为 true
 $posts = $this->repository->pushCriteria(new LessThan('name', 'value'));     // LessThan 相当于 <
 $posts = $this->repository->pushCriteria(new LessThanOrEqual('name', 'value'));  // LessThanOrEqual 相当于 <=
-$posts = $this->repository->pushCriteria(new WhereNull(['nickname', 'truename'])); // whereNull 验证字段值为空 or whereNull 相当于 is null or WhereNull('nickname')
+$posts = $this->repository->pushCriteria(new WhereNull(['nickname', 'username'])); // whereNull 验证字段值为空 or whereNull 相当于 is null or WhereNull('nickname')
 $posts = $this->repository->pushCriteria(new WhereNotNull('mobile')); // whereNotNull 验证字段不为空 or whereNotNull相当于is not null or WhereNotNull('mobile')
 $posts = $this->repository->pushCriteria(new WhereBetween('votes', [1, 100]));     //whereBetween(‘字段’,[范围区间]) 判断字段是否介于1~100范围区间 or WhereBetween('votes', [1, 100]) or WhereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
 $posts = $this->repository->pushCriteria(new WhereNotBetween('votes', [1, 100]));     // whereNotBetween(‘字段’,[范围区间]) 判断字段不在1~100范围区间 or WhereNotBetween('votes', [1, 100])
