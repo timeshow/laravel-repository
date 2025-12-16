@@ -3,7 +3,7 @@ namespace TimeShow\Repository\Helpers;
 
 use TimeShow\Repository\Exceptions\CustomException;
 
-class DaTaHelper
+class DataHelper
 {
     /**
      * object to array
