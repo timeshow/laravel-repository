@@ -3,7 +3,6 @@ declare(strict_types=1);
 namespace TimeShow\Repository\Criteria;
 
 use TimeShow\Repository\Interfaces\BaseRepositoryInterface;
-use TimeShow\Repository\Interfaces\ExtendedRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;

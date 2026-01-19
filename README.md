@@ -99,6 +99,7 @@ The `make:repository` command automatically creates a new Eloquent model reposit
 It will also attempt to link the correct Eloquent model, but make sure to confirm that it is properly set up.
 
 ```php
+php artisan make:repository TestRepository
 php artisan make:repository Test/TestRepository
 ```
 
@@ -107,6 +108,7 @@ php artisan make:repository Test/TestRepository
 The `make:service` command automatically creates a new service object class.
 
 ```bash
+php artisan make:service TestService
 php artisan make:service Test/TestService
 ```
 
@@ -169,6 +171,30 @@ $this->repository->pushCriteria(new HavingRaw('COUNT(*) > 10'));  // having(DB::
 $this->repository->pushCriteria(new HavingRaw('SUM(price) > 2500'));  //having(DB::raw('SUM(price) > 2500')) or ->groupBy('department')->havingRaw('SUM(price) > 2500')->get();
 $this->repository->pushCriteria(new OrHavingRaw('bid>1'));  //having(DB::raw('bid>1')) or ->selectRaw('bname as title')->groupBy('bid')->orHavingRaw('bid>1')->get()
 
+
+new Custom(function ($query) use ($item) { 
+    return $query->where('title', $item['title']);
+    return $query->where('price', '>=', $item['min_price'])->where('price', '<=', $item['max_price'])->where('status', 1);  // and
+    return $query->where(function ($q) use ($item) {
+        $q->where('name', 'like', "%{$item}%")->orWhere('desc', 'like', "%{$item}%");  // or
+    });
+});
+// and
+new WhereHas('goods', function ($query) use ($keyword) {
+    $query->where('name', 'like', "%{$keyword}%");
+    $query->where('price', '>', 0)->where('category_id', $categoryId)->where('status', 1);
+});
+// or
+new OrWhereHas('goods', function ($query) use ($keyword) {
+    $query->where('name', 'like', "%{$keyword}%")->orWhere('brand', $keyword);
+});
+new WhereHas('goods', function ($query) use ($keyword, $categoryId) {
+    $query->where('goods_name', 'like', "%{$keyword}%")
+          ->where(function ($q) use ($categoryId) {
+              $q->where('category_id', $categoryId)
+                ->orWhere('parent_category_id', $categoryId);
+          });
+});
 
 ```
 
@@ -273,6 +299,43 @@ You can use return ok/error in your services with BaseService instead of Excepti
 ```php
 return $this->ok('success', $data);
 return $this->error('error');
+```
+
+This class is an advanced encapsulation of the Criteria query pattern
+```php
+$criteria = ComposeCriteria::from()
+    ->when($xxxId, new FieldIsValue('xxx_id', $xxxId))  // $userId
+    ->when($xxxId, new FieldIsValue('xxx_id', $xxxId))  // $shopId 
+    ->push(new WithRelations(['xxx']))   // order
+    ->push(new FieldIsValue('xxx', 0));  // status 
+$criteria = ComposeCriteria::from()
+    ->when($xxxId, new FieldIsValue('xxx_id', $xxxId))
+    ->push(new Custom(function ($query) use ($keyword) {})
+    ->push(new WhereHas('xxx'))  // goods
+$criteria = ComposeCriteria::from()
+    ->when(!empty($keyword), new Custom(function ($query) use ($keyword) {
+        $query->where('title', 'like', "%{$keyword}%");
+    }))
+    ->when(!empty($keyword), new OrWhereHas('goods', function ($query) use ($keyword) {
+        $query->where('goods_name', 'like', "%{$keyword}%");
+    }))
+    ->when($minPrice > 0 || $maxPrice > 0, new Custom(function ($query) use ($minPrice, $maxPrice) {
+        if ($minPrice > 0) $query->where('price', '>=', $minPrice);
+        if ($maxPrice > 0) $query->where('price', '<=', $maxPrice);
+    }))
+    ->push(new Custom(function ($query) {
+        $query->where('status', 1);
+    }))
+    ->push(new WhereHas('goods', function ($query) {
+        $query->where('stock', '>', 0)->where('goods_status', 1);
+    }));
+$criteria = ComposeCriteria::from()
+    ->push(new WhereHas('goods', function ($query) use ($keyword) {
+        $query->where('name', 'like', "%{$keyword}%");
+    }))
+    ->push(new WhereHas('shop', function ($query) {
+        $query->where('status', 1);
+    }));
 ```
 
 You can use TimeHelper in your code
@@ -404,6 +467,7 @@ StringHelper::of(string $string)
 Thanks for the contributors (github.com)
 ```bash
 Wyj
+Tsingking
 Harry
 Jijacky
 ```
