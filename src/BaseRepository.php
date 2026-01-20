@@ -636,6 +636,23 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Update or Create an entity in repository
+     * 更新或创建
+     * @param array $attributes
+     * @param array $values
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes, array $values = []) : mixed
+    {
+        $attributes = array_filter($attributes);
+        if (empty($attributes)) {
+            return null;
+        }
+
+        return $this->query()->updateOrCreate($attributes, $values);
+    }
+
+    /**
      * Finds and fills a model by id, without persisting changes
      *
      * @param  array       $data
@@ -656,15 +673,25 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * Deletes a model by id
+     * Delete a model by id
      * 删除
      * @param array|int|string $ids
      * @return int
-     * @throws RepositoryException
      */
     public function delete(array|int|string $ids): int
     {
         return $this->makeModel(false)->destroy($ids);
+    }
+
+    /**
+     * Deletes multiple entities by given criteria
+     * 批量删除
+     * @param array $where
+     * @return int
+     */
+    public function deleteWhere(array $where): int
+    {
+        return $this->makeModel(false)->where($where)->delete();
     }
 
     /**

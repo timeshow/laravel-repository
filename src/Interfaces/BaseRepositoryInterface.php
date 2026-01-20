@@ -317,6 +317,15 @@ interface BaseRepositoryInterface
     public function update(array $data, int|string $id, ?string $attribute = null): bool;
 
     /**
+     * Update or Create an entity in repository
+     * 更新或创建
+     * @param array $attributes
+     * @param array $values
+     * @return mixed
+     */
+    public function updateOrCreate(array $attributes, array $values = []) : mixed;
+
+    /**
      * Finds and fills a model by id, without persisting changes
      *
      * @param  array<string, mixed>  $data
@@ -329,12 +338,20 @@ interface BaseRepositoryInterface
     public function fill(array $data, int|string $id, ?string $attribute = null): Model|false;
 
     /**
-     * Deletes a model by $id
+     * Delete a model by $id
      * 删除
      * @param int|string $id
      * @return int
      */
     public function delete(array|int|string $ids): int;
+
+    /**
+     * Deletes multiple entities by given criteria
+     * 批量删除
+     * @param array $where
+     * @return int
+     */
+    public function deleteWhere(array $where): int;
 
     /**
      * Increment a column's value by a given amount
