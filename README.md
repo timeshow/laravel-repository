@@ -87,6 +87,7 @@ The only abstract method that must be provided is the `model` method (this is ju
     public function create(array $data);
     public function save(array $data);
     public function update(array $data, $id, $attribute = null);
+    public function updateOrCreate(array $attributes, array $values = []);
     public function fill(array $data, $id, $attribute = null);
     public function delete(array|int|string $ids);
     public function increment(string $column, float|int $amount = 1);
