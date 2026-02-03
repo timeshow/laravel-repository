@@ -312,7 +312,7 @@ interface BaseRepositoryInterface
      * @param array<string, mixed>  $data
      * @param int|string $id
      * @param string|null $attribute
-     * @return bool  false if could not find model or not succesful in updating
+     * @return bool  false if could not find model or not successful in updating
      */
     public function update(array $data, int|string $id, ?string $attribute = null): bool;
 

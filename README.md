@@ -468,6 +468,7 @@ StringHelper::of(string $string)
 Thanks for the contributors (github.com)
 ```bash
 Wyj
+Veeoo
 Tsingking
 Harry
 Jijacky
