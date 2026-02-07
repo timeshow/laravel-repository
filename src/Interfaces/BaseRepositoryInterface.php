@@ -326,6 +326,34 @@ interface BaseRepositoryInterface
     public function updateOrCreate(array $attributes, array $values = []) : mixed;
 
     /**
+     * Batch update records matching conditions
+     * 批量更新符合条件的记录
+     * @param array $conditions  ['status' => 1, 'type' => 'order']
+     * @param array $data
+     * @param array $orConditions OR optional
+     * @return int rows
+     */
+    public function updateWhere(array $conditions, array $data, array $orConditions = []): int;
+
+    /**
+     * 批量更新（使用更灵活的查询构建器）
+     *
+     * @param callable $callback
+     * @param array $data
+     * @return int
+     */
+    public function updateWhereCallback(callable $callback, array $data): int;
+
+    /**
+     * 批量更新指定ID的记录
+     *
+     * @param array $ids
+     * @param array $data
+     * @return int
+     */
+    public function updateByIds(array $ids, array $data): int;
+
+    /**
      * Finds and fills a model by id, without persisting changes
      *
      * @param  array<string, mixed>  $data

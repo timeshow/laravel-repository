@@ -88,6 +88,9 @@ The only abstract method that must be provided is the `model` method (this is ju
     public function save(array $data);
     public function update(array $data, $id, $attribute = null);
     public function updateOrCreate(array $attributes, array $values = []);
+    public function updateWhere(array $conditions, array $data, array $orConditions = []);
+    public function updateWhereCallback(callable $callback, array $data);
+    public function updateByIds(array $ids, array $data);
     public function fill(array $data, $id, $attribute = null);
     public function delete(array|int|string $ids);
     public function increment(string $column, float|int $amount = 1);
@@ -252,6 +255,44 @@ $post = $this->repository->create( Input::all() );
 
 #在`Repository`中更新数据
 $post = $this->repository->update( Input::all(), $id );
+
+#在`Repository`中更新或创建数据
+$post = $this->repository->updateOrCreate( Input::all() );
+
+// 批量更新所有符合条件的记录-基本用法/使用 OR 条件/使用 IN 条件
+$this->orderRepository->updateWhere(
+    ['main_id' => $orderId, 'status' => 1], // AND 条件
+    [
+        'status' => 2,
+        'pay_status' => 1,
+        'pay_time' => Carbon::now(),
+    ]
+);
+$this->orderRepository->updateWhere(
+    ['type' => 'order'], // AND 条件
+    ['processed' => 1, 'pay_time' => Carbon::now()],
+    ['status' => 2, 'pay_status' => 1] // OR 条件
+);
+$this->orderRepository->updateWhere(
+    ['status' => [1, 2, 3]], // status IN (1, 2, 3)
+    ['updated_at' => Carbon::now()]
+);
+
+// 使用回调函数（最灵活）
+$this->orderRepository->updateWhereCallback(
+    function ($query) use ($orderId, $userId) {
+        $query->where('main_id', $orderId)
+              ->where('user_id', $userId)
+              ->where('created_at', '>', Carbon::now()->subDays(7));
+    },
+    ['status' => 2, 'processed_at' => Carbon::now()]
+);
+
+// 更新指定ID的记录
+$this->orderRepository->updateByIds(
+    [1, 2, 3, 4, 5],
+    ['status' => 2, 'updated_at' => Carbon::now()]
+);
 
 #在`Repository`中删除数据
 $this->repository->delete($id)

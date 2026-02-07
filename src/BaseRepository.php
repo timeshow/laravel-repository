@@ -653,6 +653,82 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Batch update records matching conditions
+     * 批量更新符合条件的记录
+     * @param array $conditions  ['status' => 1, 'type' => 'order']
+     * @param array $data
+     * @param array $orConditions OR optional
+     * @return int rows
+     */
+    public function updateWhere(array $conditions, array $data, array $orConditions = []): int
+    {
+        if (empty($conditions) || empty($data)) {
+            return 0;
+        }
+
+        $query = $this->query();
+
+        // AND
+        foreach ($conditions as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        // OR
+        if (!empty($orConditions)) {
+            $query->where(function ($q) use ($orConditions) {
+                foreach ($orConditions as $field => $value) {
+                    if (is_array($value)) {
+                        $q->orWhereIn($field, $value);
+                    } else {
+                        $q->orWhere($field, $value);
+                    }
+                }
+            });
+        }
+
+        return $query->update($data);
+    }
+
+    /**
+     * 批量更新（使用更灵活的查询构建器）
+     *
+     * @param callable $callback
+     * @param array $data
+     * @return int
+     */
+    public function updateWhereCallback(callable $callback, array $data): int
+    {
+        if (empty($data)) {
+            return 0;
+        }
+
+        $query = $this->query();
+        call_user_func($callback, $query);
+
+        return $query->update($data);
+    }
+
+    /**
+     * 批量更新指定ID的记录
+     *
+     * @param array $ids
+     * @param array $data
+     * @return int
+     */
+    public function updateByIds(array $ids, array $data): int
+    {
+        if (empty($ids) || empty($data)) {
+            return 0;
+        }
+
+        return $this->query()->whereIn('id', $ids)->update($data);
+    }
+
+    /**
      * Finds and fills a model by id, without persisting changes
      *
      * @param  array       $data
