@@ -30,9 +30,13 @@ class BaseService
      */
     final public function __invoke(?ServiceData $data = null): ServiceData
     {
-        $data = $data ?? new ServiceData();
+        // 确保 $data 有正确的 input 初始化
+        $data = $this->ensureDataInitialized($data);
 
         try {
+            // 执行初始化管道前，再次确保 input 已初始化
+            $this->ensureInputInitialized($data);
+
             $data = $this->executePipeline($this->init, $data);
 
             $data = $this->before($data);
@@ -52,6 +56,49 @@ class BaseService
     }
 
     /**
+     * 确保 ServiceData 已正确初始化
+     */
+    protected function ensureDataInitialized(?ServiceData $data): ServiceData
+    {
+        if ($data === null) {
+            // 创建新的 ServiceData，传入当前请求数据
+            $inputData = request()->all();
+
+            // 添加用户信息
+            $user = request()->user();
+            if ($user) {
+                $inputData['user'] = $user;
+            }
+
+            $input = new Input($inputData);
+            $data = new ServiceData($input);
+        }
+
+        return $data;
+    }
+
+    /**
+     * 确保 input 属性已初始化
+     */
+    protected function ensureInputInitialized(ServiceData $data): void
+    {
+        // 检查 input 属性是否已设置且不为 null
+        if (!isset($data->input) || $data->input === null) {
+            // 获取当前请求数据
+            $inputData = request()->all();
+
+            // 如果有用户信息，添加到请求数据中
+            $user = request()->user();
+            if ($user) {
+                $inputData['user'] = $user;
+            }
+
+            // 初始化 input
+            $data->input = new Input($inputData);
+        }
+    }
+
+    /**
      * 执行管道
      * @param array $pipeline
      * @param ServiceData $data
@@ -66,9 +113,11 @@ class BaseService
 
             $instance = static::getContainer()->make($className);
 
+            // 在调用管道项前，确保 input 已初始化
+            $this->ensureInputInitialized($data);
+
             // 支持多种调用方式
             $data = $this->executePipelineItem($instance, $data);
-
         }
 
         return $data;
@@ -82,13 +131,13 @@ class BaseService
      */
     protected function executePipelineItem($instance, ServiceData $data): ServiceData
     {
-        if (method_exists($instance, '__invoke') && is_callable([$instance, '__invoke'])) { // 如果管道类有 __invoke 方法，直接调用
+        if (method_exists($instance, '__invoke') && is_callable([$instance, '__invoke'])) {
             $result = $instance($data);
-        } elseif (method_exists($instance, 'handle')) { // 如果管道类有 handle 方法，调用 handle
+        } elseif (method_exists($instance, 'handle')) {
             $result = $instance->handle($data);
-        } elseif (method_exists($instance, 'before')) { // 如果管道类有 before 方法，调用 before
+        } elseif (method_exists($instance, 'before')) {
             $result = $instance->before($data);
-        } elseif (is_callable($instance)) { // 如果管道类有 __invoke 魔法方法
+        } elseif (is_callable($instance)) {
             $result = $instance($data);
         } else {
             throw new \RuntimeException(sprintf(
@@ -138,7 +187,12 @@ class BaseService
 
             $service = static::makeServiceInstance($constructorParams);
 
+            // 创建 ServiceData，传入 input
             $data = new ServiceData($input);
+
+            // 确保 input 已初始化
+            $service->ensureInputInitialized($data);
+
             $data = $service($data);
 
             DB::commit();
@@ -149,7 +203,6 @@ class BaseService
             Log::error(sprintf('管道 %s 事务回滚：%s', static::class, $th->getMessage()));
             throw $th;
         }
-
     }
 
     protected static function makeServiceInstance(array $constructorParams = []): static
